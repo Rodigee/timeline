@@ -1,29 +1,26 @@
-export default async function handler(req, res) {
-    const apiKey = process.env.API_NINJA_KEY;
+import { PrismaClient } from '@prisma/client'
 
-    const { month, day } = req.query;
+const prisma = new PrismaClient()
+
+export default async function handler(req, res) {
+    const { month, day } = req.query
 
     try {
-        const response = await fetch(
-            `https://api.api-ninjas.com/v1/historicalevents?month=${month}&day=${day}`,
-            {
-                headers: {
-                    'X-Api-Key': apiKey,
-                },
-            }
-        );
+        const events = await prisma.historicalEvent.findMany({
+            where: {
+                month: parseInt(month),
+                day: parseInt(day),
+            },
+            orderBy: [
+                { year: 'asc' },
+                { event: 'asc' }
+            ]
+        })
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch data');
-        }
-
-        const data = await response.json();
-
-        // Sort the data
-        data.sort((a, b) => parseInt(b.year) - parseInt(a.year));
-
-        res.status(200).json(data);
+        res.status(200).json(events)
     } catch (error) {
-        res.status(500).json({ error: 'Error fetching historical events' });
+        res.status(500).json({ error: 'Error fetching historical events' })
+    } finally {
+        await prisma.$disconnect()
     }
 }
