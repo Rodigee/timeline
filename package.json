@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed-historical-events": "node scripts/populateHistoricalEvents.js"
+    "seed-historical-events": "node scripts/populateHistoricalEvents.js",
+    "seed-wiki-historical-events": "node scripts/populateWikiHistoricalEvents.js"
   },
   "dependencies": {
     "@prisma/client": "^5.20.0",

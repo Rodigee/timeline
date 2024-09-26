@@ -14,3 +14,12 @@ model HistoricalEvent {
   day   Int
   event String
 }
+
+model WikiHistoricalEvent {
+  id            Int     @id @default(autoincrement())
+  year          Int
+  month         Int
+  day           Int
+  event         String
+  thumbnail_url String?
+}

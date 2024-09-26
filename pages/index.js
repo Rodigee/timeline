@@ -12,7 +12,7 @@ export default function TimelineGame() {
 
   const fetchEvents = (date) => {
     const [year, month, day] = date.split('-');
-    fetch(`/api/historicalEvents?month=${month}&day=${day}`)
+    fetch(`/api/wikiHistoricalEvents?month=${month}&day=${day}`)
       .then(response => response.json())
       .then(json => {
         setEvents(json);
@@ -132,7 +132,7 @@ export default function TimelineGame() {
       <div className={`p-2 rounded ${index === recentlyPlacedIndex ? 'bg-yellow-200 font-bold' : 'bg-gray-100'}`}>
         <div>{event.year}: {event.event}</div>
         <div className={`text-sm ${event.placementStatus === 'original' ? 'text-black' :
-            event.placementStatus === 'correct' ? 'text-green-600' : 'text-red-600'
+          event.placementStatus === 'correct' ? 'text-green-600' : 'text-red-600'
           }`}>
           {event.placementStatus === 'original' ? 'Placed for you' :
             event.placementStatus === 'correct' ? 'Correct' : 'Wrong'}
@@ -179,18 +179,23 @@ export default function TimelineGame() {
           </div>
         )}
       </div>
-      <div className="mb-4">
-        <h2 className="text-xl font-bold mb-2">Timeline:</h2>
-        <div className="grid grid-cols-1 gap-2">
-          {placedEvents.map(renderTimelineItem)}
-        </div>
-      </div>
       {currentEvent && !gameOver ? (
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold mb-2">Place this event in the timeline:</h3>
-          <div className="p-2 rounded bg-yellow-100">
-            {currentEvent.event}
+        <div className="mb-4 flex items-start">
+          <div className="flex-grow">
+            <h3 className="text-lg font-semibold mb-2">Place this event in the timeline:</h3>
+            <div className="p-2 rounded bg-yellow-100">
+              {currentEvent.event}
+            </div>
           </div>
+          {currentEvent.thumbnail_url && (
+            <div className="ml-4 flex-shrink-0">
+              <img
+                src={currentEvent.thumbnail_url}
+                alt="Event thumbnail"
+                className="w-32 h-32 object-cover rounded"
+              />
+            </div>
+          )}
         </div>
       ) : gameOver ? (
         <div>
@@ -205,6 +210,12 @@ export default function TimelineGame() {
           </button>
         </div>
       ) : null}
+      <div className="mb-4">
+        <h2 className="text-xl font-bold mb-2">Timeline:</h2>
+        <div className="grid grid-cols-1 gap-2">
+          {placedEvents.map(renderTimelineItem)}
+        </div>
+      </div>
     </section>
   );
 }
