@@ -25,7 +25,7 @@ export default function TimelineGame() {
     if (eventsList.length > 0) {
       const randomIndex = Math.floor(Math.random() * eventsList.length);
       const firstEvent = eventsList[randomIndex];
-      setPlacedEvents([firstEvent]);
+      setPlacedEvents([{ ...firstEvent, placementStatus: 'original' }]);
       const remainingEvents = eventsList.filter((_, index) => index !== randomIndex);
       setEvents(remainingEvents);
       setScore(0);
@@ -96,11 +96,10 @@ export default function TimelineGame() {
       });
     }
 
-    newPlacedEvents.splice(actualIndex, 0, currentEvent);
+    newPlacedEvents.splice(actualIndex, 0, { ...currentEvent, placementStatus: isCorrect ? 'correct' : 'wrong' });
     setPlacedEvents(newPlacedEvents);
     setRecentlyPlacedIndex(actualIndex);
 
-    // Immediately get the next event
     if (events.length > 0) {
       getNextEvent(events);
     } else {
@@ -108,7 +107,6 @@ export default function TimelineGame() {
       setGameOver(true);
     }
 
-    // Clear feedback and highlighting after delay
     setTimeout(() => {
       setFeedback(null);
       setRecentlyPlacedIndex(null);
@@ -123,18 +121,30 @@ export default function TimelineGame() {
 
   const renderTimelineItem = (event, index) => (
     <React.Fragment key={event.year}>
-      <li className={`p-2 rounded ${index === recentlyPlacedIndex ? 'bg-yellow-200 font-bold' : 'bg-gray-100'}`}>
-        {event.year}: {event.event}
-      </li>
+      {index === 0 && !gameOver && (
+        <button
+          onClick={() => handlePlaceEvent(0)}
+          className="bg-blue-500 text-white px-2 py-1 rounded text-sm w-full"
+        >
+          Place here
+        </button>
+      )}
+      <div className={`p-2 rounded ${index === recentlyPlacedIndex ? 'bg-yellow-200 font-bold' : 'bg-gray-100'}`}>
+        <div>{event.year}: {event.event}</div>
+        <div className={`text-sm ${event.placementStatus === 'original' ? 'text-black' :
+            event.placementStatus === 'correct' ? 'text-green-600' : 'text-red-600'
+          }`}>
+          {event.placementStatus === 'original' ? 'Placed for you' :
+            event.placementStatus === 'correct' ? 'Correct' : 'Wrong'}
+        </div>
+      </div>
       {!gameOver && (
-        <li>
-          <button
-            onClick={() => handlePlaceEvent(index + 1)}
-            className="w-full bg-blue-500 text-white px-4 py-2 rounded my-2"
-          >
-            Place here
-          </button>
-        </li>
+        <button
+          onClick={() => handlePlaceEvent(index + 1)}
+          className="bg-blue-500 text-white px-2 py-1 rounded text-sm w-full"
+        >
+          Place here
+        </button>
       )}
     </React.Fragment>
   );
@@ -171,19 +181,9 @@ export default function TimelineGame() {
       </div>
       <div className="mb-4">
         <h2 className="text-xl font-bold mb-2">Timeline:</h2>
-        <ul className="space-y-2">
-          {!gameOver && (
-            <li>
-              <button
-                onClick={() => handlePlaceEvent(0)}
-                className="w-full bg-blue-500 text-white px-4 py-2 rounded mb-2"
-              >
-                Place here
-              </button>
-            </li>
-          )}
+        <div className="grid grid-cols-1 gap-2">
           {placedEvents.map(renderTimelineItem)}
-        </ul>
+        </div>
       </div>
       {currentEvent && !gameOver ? (
         <div className="mb-4">
@@ -195,7 +195,7 @@ export default function TimelineGame() {
       ) : gameOver ? (
         <div>
           <div className="text-green-600 font-bold mb-4">
-            Game Over! You've placed all events. Final score: {score}/{placedEvents.length}
+            Game Over! You've placed all events. Final score: {score}/{placedEvents.length - 1}
           </div>
           <button
             onClick={() => resetGame(selectedDate)}
