@@ -4,7 +4,6 @@ export default function TimelineGame() {
   const [events, setEvents] = useState([]);
   const [placedEvents, setPlacedEvents] = useState([]);
   const [currentEvent, setCurrentEvent] = useState(null);
-  const [comparisonEvent, setComparisonEvent] = useState(null);
   const [selectedDate, setSelectedDate] = useState('');
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
@@ -27,25 +26,21 @@ export default function TimelineGame() {
       const randomIndex = Math.floor(Math.random() * eventsList.length);
       const firstEvent = eventsList[randomIndex];
       setPlacedEvents([firstEvent]);
-      setEvents(eventsList.filter((_, index) => index !== randomIndex));
+      const remainingEvents = eventsList.filter((_, index) => index !== randomIndex);
+      setEvents(remainingEvents);
       setScore(0);
       setFeedback(null);
-      setRecentlyPlacedIndex(null);
       setGameOver(false);
-      setCurrentEvent(null);
-      setComparisonEvent(null);
+      setRecentlyPlacedIndex(null);
+      getNextEvent(remainingEvents);
     }
   };
 
-  const getNextEvent = () => {
-    if (events.length > 0) {
-      const randomIndex = Math.floor(Math.random() * events.length);
-      setCurrentEvent(events[randomIndex]);
-      setEvents(events.filter((_, index) => index !== randomIndex));
-
-      const randomPlacedIndex = Math.floor(Math.random() * placedEvents.length);
-      setComparisonEvent(placedEvents[randomPlacedIndex]);
-      setRecentlyPlacedIndex(null);
+  const getNextEvent = (remainingEvents) => {
+    if (remainingEvents.length > 0) {
+      const randomIndex = Math.floor(Math.random() * remainingEvents.length);
+      setCurrentEvent(remainingEvents[randomIndex]);
+      setEvents(remainingEvents.filter((_, index) => index !== randomIndex));
     } else {
       setGameOver(true);
     }
@@ -57,47 +52,9 @@ export default function TimelineGame() {
     resetGame(newDate);
   };
 
-  const handleGuess = (isBefore) => {
-    if (!currentEvent || !comparisonEvent) return;
-
-    const isCorrect = isBefore
-      ? currentEvent.year < comparisonEvent.year
-      : currentEvent.year > comparisonEvent.year;
-
-    if (isCorrect) {
-      setScore(prevScore => prevScore + 1);
-      setFeedback({ message: "Correct!", isCorrect: true });
-    } else {
-      setFeedback({ message: "Incorrect!", isCorrect: false });
-    }
-
-    const newPlacedEvents = [...placedEvents];
-    const insertIndex = newPlacedEvents.findIndex(event =>
-      isBefore ? event.year > currentEvent.year : event.year >= currentEvent.year
-    );
-
-    if (insertIndex === -1) {
-      newPlacedEvents.push(currentEvent);
-      setRecentlyPlacedIndex(newPlacedEvents.length - 1);
-    } else {
-      newPlacedEvents.splice(insertIndex, 0, currentEvent);
-      setRecentlyPlacedIndex(insertIndex);
-    }
-
-    setPlacedEvents(newPlacedEvents);
-
-    setTimeout(() => {
-      setCurrentEvent(null);
-      setComparisonEvent(null);
-      setFeedback(null);
-      setRecentlyPlacedIndex(null);
-    }, 1500);
-  };
-
   const resetGame = (date) => {
     setPlacedEvents([]);
     setCurrentEvent(null);
-    setComparisonEvent(null);
     setGameOver(false);
     setScore(0);
     setFeedback(null);
@@ -118,17 +75,69 @@ export default function TimelineGame() {
     resetGame(randomDate);
   };
 
+  const handlePlaceEvent = (guessedIndex) => {
+    if (!currentEvent || gameOver) return;
+
+    const newPlacedEvents = [...placedEvents];
+
+    const correctIndex = newPlacedEvents.findIndex(event => event.year > currentEvent.year);
+    const actualIndex = correctIndex === -1 ? newPlacedEvents.length : correctIndex;
+
+    const isCorrect = guessedIndex === actualIndex;
+
+    if (isCorrect) {
+      setScore(prevScore => prevScore + 1);
+      setFeedback({ message: "Correct!", isCorrect: true });
+    } else {
+      setFeedback({
+        message: "Incorrect! The event belongs " +
+          (actualIndex < guessedIndex ? "earlier" : "later") + " in the timeline.",
+        isCorrect: false
+      });
+    }
+
+    newPlacedEvents.splice(actualIndex, 0, currentEvent);
+    setPlacedEvents(newPlacedEvents);
+    setRecentlyPlacedIndex(actualIndex);
+
+    // Immediately get the next event
+    if (events.length > 0) {
+      getNextEvent(events);
+    } else {
+      setCurrentEvent(null);
+      setGameOver(true);
+    }
+
+    // Clear feedback and highlighting after delay
+    setTimeout(() => {
+      setFeedback(null);
+      setRecentlyPlacedIndex(null);
+    }, 2000);
+  };
+
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
     setSelectedDate(today);
     resetGame(today);
   }, []);
 
-  useEffect(() => {
-    if (placedEvents.length > 0 && !currentEvent && !gameOver && !feedback) {
-      getNextEvent();
-    }
-  }, [placedEvents, currentEvent, gameOver, feedback]);
+  const renderTimelineItem = (event, index) => (
+    <React.Fragment key={event.year}>
+      <li className={`p-2 rounded ${index === recentlyPlacedIndex ? 'bg-yellow-200 font-bold' : 'bg-gray-100'}`}>
+        {event.year}: {event.event}
+      </li>
+      {!gameOver && (
+        <li>
+          <button
+            onClick={() => handlePlaceEvent(index + 1)}
+            className="w-full bg-blue-500 text-white px-4 py-2 rounded my-2"
+          >
+            Place here
+          </button>
+        </li>
+      )}
+    </React.Fragment>
+  );
 
   return (
     <section className="p-4">
@@ -163,38 +172,30 @@ export default function TimelineGame() {
       <div className="mb-4">
         <h2 className="text-xl font-bold mb-2">Timeline:</h2>
         <ul className="space-y-2">
-          {placedEvents.map((event, index) => (
-            <li
-              key={index}
-              className={`p-2 rounded ${index === recentlyPlacedIndex
-                ? 'bg-yellow-200 font-bold'
-                : 'bg-gray-100'
-                }`}
-            >
-              {event.year}: {event.event}
+          {!gameOver && (
+            <li>
+              <button
+                onClick={() => handlePlaceEvent(0)}
+                className="w-full bg-blue-500 text-white px-4 py-2 rounded mb-2"
+              >
+                Place here
+              </button>
             </li>
-          ))}
+          )}
+          {placedEvents.map(renderTimelineItem)}
         </ul>
       </div>
-      {(currentEvent && comparisonEvent && !gameOver) ? (
+      {currentEvent && !gameOver ? (
         <div className="mb-4">
-          <h3 className="text-lg font-semibold mb-2">Place this event:</h3>
-          <p className="mb-2 font-bold">{currentEvent.event}</p>
-          <p className="mb-2">Compared to:</p>
-          <p className="mb-2 font-bold">{comparisonEvent.year}: {comparisonEvent.event}</p>
-          <div className="space-x-2">
-            <button onClick={() => handleGuess(true)} className="bg-blue-500 text-white px-4 py-2 rounded">
-              Before
-            </button>
-            <button onClick={() => handleGuess(false)} className="bg-blue-500 text-white px-4 py-2 rounded">
-              After
-            </button>
+          <h3 className="text-lg font-semibold mb-2">Place this event in the timeline:</h3>
+          <div className="p-2 rounded bg-yellow-100">
+            {currentEvent.event}
           </div>
         </div>
       ) : gameOver ? (
         <div>
           <div className="text-green-600 font-bold mb-4">
-            Game Over! You've placed all events. Final score: {score}/{events.length + placedEvents.length - 1}
+            Game Over! You've placed all events. Final score: {score}/{placedEvents.length}
           </div>
           <button
             onClick={() => resetGame(selectedDate)}
