@@ -4,15 +4,18 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "postinstall": "prisma generate",
+    "build":"prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push",
+    "prisma:push:prod": "dotenv -e .env.production -- prisma db push",
     "seed-historical-events": "node scripts/populateHistoricalEvents.js",
     "seed-wiki-historical-events": "node scripts/populateWikiHistoricalEvents.js"
   },
   "dependencies": {
     "@prisma/client": "^5.20.0",
+    "@supabase/supabase-js": "^2.45.4",
     "autoprefixer": "10.4.14",
     "dotenv": "^16.4.5",
     "eslint": "8.38.0",

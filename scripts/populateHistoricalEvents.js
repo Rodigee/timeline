@@ -1,8 +1,6 @@
-const { PrismaClient } = require('@prisma/client')
+import prisma from '../lib/prisma'
 const https = require('https')
 require('dotenv').config()
-
-const prisma = new PrismaClient()
 
 function httpsGet(url, headers) {
     return new Promise((resolve, reject) => {
