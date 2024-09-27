@@ -4,12 +4,18 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build":"prisma generate && next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "prisma:push:prod": "dotenv -e .env.production -- prisma db push",
+    "prisma:push:prod:debug": "DEBUG=\"*\" dotenv -e .env.production -- prisma db push",
+    "prisma:migrate:prod": "dotenv -e .env.production -- prisma migrate deploy",
+    "prisma:test-connection": "dotenv -e .env.production -- prisma db execute --stdin < test.sql",
+    "prisma:test-connection:verbose": "DEBUG=\"*\" dotenv -e .env.production -- node -e \"setTimeout(() => process.exit(1), 300000)\" & prisma db pull && kill $!",
+    "prisma:min-migration": "dotenv -e .env.production -- npx prisma db pull --schema=./minimal-schema.prisma",
+    "test:env": "dotenv -e .env.production -- node -e \"console.log(process.env.DATABASE_URL)\"",
     "seed-historical-events": "node scripts/populateHistoricalEvents.js",
     "seed-wiki-historical-events": "node scripts/populateWikiHistoricalEvents.js"
   },
@@ -22,12 +28,14 @@
     "eslint-config-next": "13.3.0",
     "next": "13.3.0",
     "node-fetch": "^2.7.0",
+    "pg": "^8.13.0",
     "postcss": "8.4.22",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "tailwindcss": "3.3.1"
   },
   "devDependencies": {
+    "dotenv-cli": "^7.4.2",
     "prisma": "^5.20.0"
   }
 }

@@ -10,8 +10,8 @@ export default async function handler(req, res) {
                 day: parseInt(day),
             },
             orderBy: [
-                { year: 'asc' },
-                { event: 'asc' }
+                { year: 'desc' },
+                { event: 'desc' }
             ],
             take: 10
         })
