@@ -85,12 +85,13 @@ export default function TimelineGame() {
 
         if (isCorrect) {
             setScore(prevScore => prevScore + 1);
-            setFeedback({ message: "Correct!", isCorrect: true });
+            setFeedback({ message: "Correct!", isCorrect: true, event: currentEvent });
         } else {
             setFeedback({
                 message: "Incorrect! The event belongs " +
                     (actualIndex < guessedIndex ? "earlier" : "later") + " in the timeline.",
-                isCorrect: false
+                isCorrect: false,
+                event: currentEvent
             });
         }
 
@@ -106,38 +107,53 @@ export default function TimelineGame() {
         }
 
         setTimeout(() => {
-            setFeedback(null);
             setRecentlyPlacedIndex(null);
         }, 2000);
     };
 
     return (
-        <section className="p-4">
-            <DateSelector
-                selectedDate={selectedDate}
-                onDateChange={(newDate) => {
-                    setSelectedDate(newDate);
-                    resetGame(newDate);
-                }}
-                onRandomDate={() => {
-                    const randomDate = getRandomDate();
-                    setSelectedDate(randomDate);
-                    resetGame(randomDate);
-                }}
-            />
-            <ScoreDisplay score={score} />
-            <FeedbackDisplay feedback={feedback} />
-            {currentEvent && !gameOver ? (
-                <CurrentEvent event={currentEvent} />
-            ) : gameOver ? (
-                <GameOver score={score} totalEvents={placedEvents.length - 1} onPlayAgain={() => resetGame(selectedDate)} />
-            ) : null}
-            <Timeline
-                placedEvents={placedEvents}
-                gameOver={gameOver}
-                onPlaceEvent={handlePlaceEvent}
-                recentlyPlacedIndex={recentlyPlacedIndex}
-            />
+        <section className="flex flex-col h-screen">
+            <div className="p-4">
+                <DateSelector
+                    selectedDate={selectedDate}
+                    onDateChange={(newDate) => {
+                        setSelectedDate(newDate);
+                        resetGame(newDate);
+                    }}
+                    onRandomDate={() => {
+                        const randomDate = getRandomDate();
+                        setSelectedDate(randomDate);
+                        resetGame(randomDate);
+                    }}
+                />
+                <ScoreDisplay score={score} />
+                <FeedbackDisplay feedback={feedback} />
+            </div>
+
+            <div className="flex-grow overflow-y-auto p-4 pb-32"> {/* Scrollable area with bottom padding */}
+                <Timeline
+                    placedEvents={placedEvents}
+                    gameOver={gameOver}
+                    onPlaceEvent={handlePlaceEvent}
+                    recentlyPlacedIndex={recentlyPlacedIndex}
+                />
+
+                {gameOver && (
+                    <div className="mt-4">
+                        <GameOver
+                            score={score}
+                            totalEvents={placedEvents.length - 1}
+                            onPlayAgain={() => resetGame(selectedDate)}
+                        />
+                    </div>
+                )}
+            </div>
+
+            {currentEvent && !gameOver && (
+                <div className="fixed bottom-0 left-0 right-0 bg-white shadow-md p-4">
+                    <CurrentEvent event={currentEvent} />
+                </div>
+            )}
         </section>
     );
 }

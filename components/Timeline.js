@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatYear } from './Utils';
 
 export default function Timeline({ placedEvents, gameOver, onPlaceEvent, recentlyPlacedIndex }) {
     const PlaceHereButton = ({ index }) => (
@@ -14,12 +15,23 @@ export default function Timeline({ placedEvents, gameOver, onPlaceEvent, recentl
         <React.Fragment key={event.year}>
             {index === 0 && !gameOver && <PlaceHereButton index={0} />}
             <div className={`p-2 rounded ${index === recentlyPlacedIndex ? 'bg-yellow-200 font-bold' : 'bg-gray-100'}`}>
-                <div>{event.year}: {event.event}</div>
-                <div className={`text-sm ${event.placementStatus === 'original' ? 'text-black' :
-                        event.placementStatus === 'correct' ? 'text-green-600' : 'text-red-600'
-                    }`}>
-                    {event.placementStatus === 'original' ? 'Placed for you' :
-                        event.placementStatus === 'correct' ? 'Correct' : 'Wrong'}
+                <div className="flex items-center gap-4">
+                    <div>
+                        <div>{formatYear(event.year)}: {event.event}</div>
+                        <div className={`text-sm ${event.placementStatus === 'original' ? 'text-black' :
+                                event.placementStatus === 'correct' ? 'text-green-600' : 'text-red-600'
+                            }`}>
+                            {event.placementStatus === 'original' ? 'Placed for you' :
+                                event.placementStatus === 'correct' ? 'Correct' : 'Wrong'}
+                        </div>
+                    </div>
+                    {event.thumbnail_url && (
+                        <img
+                            src={event.thumbnail_url}
+                            alt="Event thumbnail"
+                            className="w-16 h-16 object-cover rounded"
+                        />
+                    )}
                 </div>
             </div>
             {!gameOver && <PlaceHereButton index={index + 1} />}
