@@ -4,7 +4,7 @@ export default function GameOver({ score, totalEvents, onPlayAgain }) {
     return (
         <div>
             <div className="text-green-600 font-bold mb-4">
-                Game Over! You've placed all events. Final score: {score}/{totalEvents}
+                Game Over! You have placed all events. Final score: {score}/{totalEvents}
             </div>
             <button
                 onClick={onPlayAgain}
