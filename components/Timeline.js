@@ -18,8 +18,8 @@ export default function Timeline({ placedEvents, gameOver, onPlaceEvent, recentl
                 ? 'bg-yellow-200 dark:bg-yellow-800 font-bold'
                 : 'bg-gray-100 dark:bg-gray-700'
                 }`}>
-                <div className="flex items-center gap-4">
-                    <div>
+                <div className="flex items-start gap-4">
+                    <div className="flex-grow">
                         <div className="dark:text-white">{formatYear(event.year)}: {event.event}</div>
                         <div className={`text-sm ${event.placementStatus === 'original'
                             ? 'text-gray-600 dark:text-gray-300'
@@ -32,11 +32,13 @@ export default function Timeline({ placedEvents, gameOver, onPlaceEvent, recentl
                         </div>
                     </div>
                     {event.thumbnail_url && (
-                        <img
-                            src={event.thumbnail_url}
-                            alt="Event thumbnail"
-                            className="w-16 h-16 object-cover rounded"
-                        />
+                        <div className="flex-shrink-0 max-w-[64px]">
+                            <img
+                                src={event.thumbnail_url}
+                                alt="Event thumbnail"
+                                className="w-full h-auto max-h-16 object-contain rounded"
+                            />
+                        </div>
                     )}
                 </div>
             </div>
@@ -46,7 +48,6 @@ export default function Timeline({ placedEvents, gameOver, onPlaceEvent, recentl
 
     return (
         <div className="mb-4">
-            <h2 className="text-xl font-bold mb-2 dark:text-white">Timeline:</h2>
             <div className="grid grid-cols-1 gap-2">
                 {placedEvents.map(renderTimelineItem)}
             </div>
