@@ -9,10 +9,15 @@ datasource db {
 }
 
 model WikiHistoricalEvent {
-  id            Int     @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   year          Int
   month         Int
   day           Int
   event         String
   thumbnail_url String?
+  extract       String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+
+  @@unique([year, month, day, event])
 }

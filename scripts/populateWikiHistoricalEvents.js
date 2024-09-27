@@ -1,4 +1,5 @@
-import prisma from '@/lib/prisma'
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 const https = require('https')
 require('dotenv').config()
 
@@ -40,26 +41,41 @@ async function fetchAndStoreWikiEvents() {
 
                 for (const event of events) {
                     const thumbnailUrl = event.pages[0]?.thumbnail?.source || null;
+                    const extract = event.pages[0]?.extract || null;
 
-                    await prisma.wikiHistoricalEvent.create({
-                        data: {
+                    await prisma.wikiHistoricalEvent.upsert({
+                        where: {
+                            year_month_day_event: {
+                                year: event.year,
+                                month,
+                                day,
+                                event: event.text
+                            }
+                        },
+                        update: {
+                            thumbnail_url: thumbnailUrl,
+                            extract: extract,
+                            updatedAt: new Date(),
+                        },
+                        create: {
                             year: event.year,
                             month,
                             day,
                             event: event.text,
                             thumbnail_url: thumbnailUrl,
+                            extract: extract,
+                            updatedAt: new Date(),
                         },
                     });
                 }
 
-                console.log(`Stored events for ${month}/${day}`);
+                console.log(`Updated events for ${month}/${day}`);
             } catch (error) {
-                console.error(`Error fetching/storing events for ${month}/${day}:`, error.message);
+                console.error(`Error fetching/updating events for ${month}/${day}:`, error.message);
             }
         }
     }
 }
-
 fetchAndStoreWikiEvents()
     .catch((e) => {
         console.error('Unhandled error:', e);

@@ -4,6 +4,7 @@ import ImagePopup from './ImagePopup';
 
 export default function Timeline({ placedEvents, gameOver, onPlaceEvent, recentlyPlacedIndex }) {
     const [popupImage, setPopupImage] = useState(null);
+    const [expandedIndex, setExpandedIndex] = useState(null);
 
     const PlaceHereButton = ({ index }) => (
         <button
@@ -18,21 +19,36 @@ export default function Timeline({ placedEvents, gameOver, onPlaceEvent, recentl
         <React.Fragment key={event.year}>
             {index === 0 && !gameOver && <PlaceHereButton index={0} />}
             <div className={`p-2 rounded ${index === recentlyPlacedIndex
-                    ? 'bg-yellow-200 dark:bg-yellow-800 font-bold'
-                    : 'bg-gray-100 dark:bg-gray-700'
+                ? 'bg-yellow-200 dark:bg-yellow-800 font-bold'
+                : 'bg-gray-100 dark:bg-gray-700'
                 }`}>
                 <div className="flex items-start gap-4">
                     <div className="flex-grow">
                         <div className="dark:text-white">{formatYear(event.year)}: {event.event}</div>
                         <div className={`text-sm ${event.placementStatus === 'original'
-                                ? 'text-gray-600 dark:text-gray-300'
-                                : event.placementStatus === 'correct'
-                                    ? 'text-green-600 dark:text-green-400'
-                                    : 'text-red-600 dark:text-red-400'
+                            ? 'text-gray-600 dark:text-gray-300'
+                            : event.placementStatus === 'correct'
+                                ? 'text-green-600 dark:text-green-400'
+                                : 'text-red-600 dark:text-red-400'
                             }`}>
                             {event.placementStatus === 'original' ? 'Placed for you' :
                                 event.placementStatus === 'correct' ? 'Correct' : 'Wrong'}
                         </div>
+                        {event.extract && (
+                            <>
+                                <button
+                                    onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
+                                    className="text-blue-500 hover:text-blue-600 mt-2"
+                                >
+                                    {expandedIndex === index ? 'Hide details' : 'Show details'}
+                                </button>
+                                {expandedIndex === index && (
+                                    <div className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                                        {event.extract}
+                                    </div>
+                                )}
+                            </>
+                        )}
                     </div>
                     {event.thumbnail_url && (
                         <div className="flex-shrink-0 max-w-[64px] cursor-pointer" onClick={() => setPopupImage(event.thumbnail_url)}>
