@@ -10,7 +10,8 @@ export default function TimelineGame() {
     const [events, setEvents] = useState([]);
     const [placedEvents, setPlacedEvents] = useState([]);
     const [currentEvent, setCurrentEvent] = useState(null);
-    const [selectedDate, setSelectedDate] = useState('');
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+    const [selectedDay, setSelectedDay] = useState(new Date().getDate());
     const [startYear, setStartYear] = useState('');
     const [endYear, setEndYear] = useState('');
     const [gameOver, setGameOver] = useState(false);
@@ -22,12 +23,12 @@ export default function TimelineGame() {
     const [totalItems, setTotalItems] = useState(0);
 
     useEffect(() => {
-        const today = new Date().toISOString().split('T')[0];
-        setSelectedDate(today);
+        const today = new Date();
+        setSelectedMonth(today.getMonth() + 1);
+        setSelectedDay(today.getDate());
     }, []);
 
-    const fetchEvents = useCallback((date, start, end) => {
-        const [year, month, day] = date.split('-');
+    const fetchEvents = useCallback((month, day, start, end) => {
         const startYearParam = start ? `&startYear=${start}` : '';
         const endYearParam = end ? `&endYear=${end}` : '';
         return fetch(`/api/wikiHistoricalEvents?month=${month}&day=${day}${startYearParam}${endYearParam}`)
@@ -51,13 +52,6 @@ export default function TimelineGame() {
             setIsGameStarted(true);
         }
     }, []);
-
-    const getRandomDate = () => {
-        const start = new Date(2023, 0, 1);
-        const end = new Date(2023, 11, 31);
-        const randomDate = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-        return randomDate.toISOString().split('T')[0];
-    };
 
     const getNextEvent = useCallback((remainingEvents) => {
         if (remainingEvents.length > 0) {
@@ -83,10 +77,15 @@ export default function TimelineGame() {
     }, []);
 
     const handleStartGame = useCallback(() => {
-        fetchEvents(selectedDate, startYear, endYear).then(json => {
+        fetchEvents(selectedMonth, selectedDay, startYear, endYear).then(json => {
             startGame(json);
         });
-    }, [fetchEvents, selectedDate, startYear, endYear, startGame]);
+    }, [fetchEvents, selectedMonth, selectedDay, startYear, endYear, startGame]);
+
+    const handleDateChange = useCallback((month, day) => {
+        setSelectedMonth(month);
+        setSelectedDay(day);
+    }, []);
 
     const handlePlaceEvent = useCallback((guessedIndex) => {
         if (!currentEvent || gameOver) return;
@@ -140,12 +139,9 @@ export default function TimelineGame() {
                 {!isGameStarted ? (
                     <>
                         <DateSelector
-                            selectedDate={selectedDate}
-                            onDateChange={setSelectedDate}
-                            onRandomDate={() => {
-                                const randomDate = getRandomDate();
-                                setSelectedDate(randomDate);
-                            }}
+                            selectedMonth={selectedMonth}
+                            selectedDay={selectedDay}
+                            onDateChange={handleDateChange}
                             startYear={startYear}
                             endYear={endYear}
                             onStartYearChange={setStartYear}
@@ -168,7 +164,6 @@ export default function TimelineGame() {
                         </button>
                     </div>
                 )}
-
             </div>
 
             {isGameStarted && (
