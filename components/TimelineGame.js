@@ -1,5 +1,4 @@
-// TimelineGame.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import DateSelector from './DateSelector';
 import ScoreDisplay from './ScoreDisplay';
 import FeedbackDisplay from './FeedbackDisplay';
@@ -12,20 +11,55 @@ export default function TimelineGame() {
     const [placedEvents, setPlacedEvents] = useState([]);
     const [currentEvent, setCurrentEvent] = useState(null);
     const [selectedDate, setSelectedDate] = useState('');
+    const [startYear, setStartYear] = useState('');
+    const [endYear, setEndYear] = useState('');
     const [gameOver, setGameOver] = useState(false);
     const [score, setScore] = useState(0);
     const [feedback, setFeedback] = useState(null);
     const [recentlyPlacedIndex, setRecentlyPlacedIndex] = useState(null);
 
+    const resetGame = useCallback((date, start, end) => {
+        setPlacedEvents([]);
+        setCurrentEvent(null);
+        setGameOver(false);
+        setScore(0);
+        setFeedback(null);
+        setRecentlyPlacedIndex(null);
+        fetchEvents(date, start, end).then(json => {
+            setEvents(json);
+            const startGame = (eventsList) => {
+                if (eventsList.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * eventsList.length);
+                    const firstEvent = eventsList[randomIndex];
+                    setPlacedEvents([{ ...firstEvent, placementStatus: 'original' }]);
+                    const remainingEvents = eventsList.filter((_, index) => index !== randomIndex);
+                    setEvents(remainingEvents);
+                    setScore(0);
+                    setFeedback(null);
+                    setGameOver(false);
+                    setRecentlyPlacedIndex(null);
+                    getNextEvent(remainingEvents);
+                }
+            };
+            startGame(json);
+        });
+    }, []);
+
     useEffect(() => {
         const today = new Date().toISOString().split('T')[0];
         setSelectedDate(today);
-        resetGame(today);
-    }, []);
+        resetGame(today, startYear, endYear);
+    }, [resetGame, startYear, endYear]);
 
-    const fetchEvents = (date) => {
+    useEffect(() => {
+        resetGame(selectedDate, startYear, endYear);
+    }, [resetGame, selectedDate, startYear, endYear]);
+
+    const fetchEvents = (date, start, end) => {
         const [year, month, day] = date.split('-');
-        return fetch(`/api/wikiHistoricalEvents?month=${month}&day=${day}`)
+        const startYearParam = start ? `&startYear=${start}` : '';
+        const endYearParam = end ? `&endYear=${end}` : '';
+        return fetch(`/api/wikiHistoricalEvents?month=${month}&day=${day}${startYearParam}${endYearParam}`)
             .then(response => response.json())
             .catch(error => console.error(error));
     };
@@ -37,21 +71,6 @@ export default function TimelineGame() {
         return randomDate.toISOString().split('T')[0];
     };
 
-    const startGame = (eventsList) => {
-        if (eventsList.length > 0) {
-            const randomIndex = Math.floor(Math.random() * eventsList.length);
-            const firstEvent = eventsList[randomIndex];
-            setPlacedEvents([{ ...firstEvent, placementStatus: 'original' }]);
-            const remainingEvents = eventsList.filter((_, index) => index !== randomIndex);
-            setEvents(remainingEvents);
-            setScore(0);
-            setFeedback(null);
-            setGameOver(false);
-            setRecentlyPlacedIndex(null);
-            getNextEvent(remainingEvents);
-        }
-    };
-
     const getNextEvent = (remainingEvents) => {
         if (remainingEvents.length > 0) {
             const randomIndex = Math.floor(Math.random() * remainingEvents.length);
@@ -60,19 +79,6 @@ export default function TimelineGame() {
         } else {
             setGameOver(true);
         }
-    };
-
-    const resetGame = (date) => {
-        setPlacedEvents([]);
-        setCurrentEvent(null);
-        setGameOver(false);
-        setScore(0);
-        setFeedback(null);
-        setRecentlyPlacedIndex(null);
-        fetchEvents(date).then(json => {
-            setEvents(json);
-            startGame(json);
-        });
     };
 
     const handlePlaceEvent = (guessedIndex) => {
@@ -116,21 +122,21 @@ export default function TimelineGame() {
             <div className="p-4">
                 <DateSelector
                     selectedDate={selectedDate}
-                    onDateChange={(newDate) => {
-                        setSelectedDate(newDate);
-                        resetGame(newDate);
-                    }}
+                    onDateChange={setSelectedDate}
                     onRandomDate={() => {
                         const randomDate = getRandomDate();
                         setSelectedDate(randomDate);
-                        resetGame(randomDate);
                     }}
+                    startYear={startYear}
+                    endYear={endYear}
+                    onStartYearChange={setStartYear}
+                    onEndYearChange={setEndYear}
                 />
                 <ScoreDisplay score={score} />
                 <FeedbackDisplay feedback={feedback} />
             </div>
 
-            <div className="flex-grow overflow-y-auto p-4 pb-32"> {/* Scrollable area with bottom padding */}
+            <div className="flex-grow overflow-y-auto p-4 pb-32">
                 <Timeline
                     placedEvents={placedEvents}
                     gameOver={gameOver}
@@ -143,7 +149,7 @@ export default function TimelineGame() {
                         <GameOver
                             score={score}
                             totalEvents={placedEvents.length - 1}
-                            onPlayAgain={() => resetGame(selectedDate)}
+                            onPlayAgain={() => resetGame(selectedDate, startYear, endYear)}
                         />
                     </div>
                 )}
