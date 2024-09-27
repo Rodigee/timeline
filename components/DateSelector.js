@@ -67,7 +67,6 @@ export default function DateSelector({ selectedMonth, selectedDay, onDateChange,
                         id="dayPicker"
                         value={selectedDay}
                         onChange={handleDayChange}
-                        onChange={handleMonthChange}
                         className="border rounded p-2 bg-white dark:bg-gray-700 text-black dark:text-white"
                     >
                         {days.map(day => (

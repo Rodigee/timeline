@@ -188,7 +188,7 @@ export default function TimelineGame() {
             )}
 
             {currentEvent && !gameOver && isGameStarted && (
-                <div className="fixed bottom-0 left-0 right-0 bg-white shadow-md p-4">
+                <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 shadow-md p-4">
                     <CurrentEvent event={currentEvent} />
                 </div>
             )}
