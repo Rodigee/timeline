@@ -18,6 +18,8 @@ export default function TimelineGame() {
     const [feedback, setFeedback] = useState(null);
     const [recentlyPlacedIndex, setRecentlyPlacedIndex] = useState(null);
     const [isGameStarted, setIsGameStarted] = useState(false);
+    const [currentItemIndex, setCurrentItemIndex] = useState(0);
+    const [totalItems, setTotalItems] = useState(0);
 
     useEffect(() => {
         const today = new Date().toISOString().split('T')[0];
@@ -41,6 +43,7 @@ export default function TimelineGame() {
             const remainingEvents = eventsList.filter((_, index) => index !== randomIndex);
             setEvents(remainingEvents);
             setScore(0);
+            setTotalItems(eventsList.length - 1);
             setFeedback(null);
             setGameOver(false);
             setRecentlyPlacedIndex(null);
@@ -60,6 +63,7 @@ export default function TimelineGame() {
         if (remainingEvents.length > 0) {
             const randomIndex = Math.floor(Math.random() * remainingEvents.length);
             setCurrentEvent(remainingEvents[randomIndex]);
+            setCurrentItemIndex(prevIndex => prevIndex + 1);
             setEvents(remainingEvents.filter((_, index) => index !== randomIndex));
         } else {
             setGameOver(true);
@@ -72,6 +76,8 @@ export default function TimelineGame() {
         setCurrentEvent(null);
         setGameOver(false);
         setScore(0);
+        setCurrentItemIndex(0);
+        setTotalItems(0);
         setFeedback(null);
         setRecentlyPlacedIndex(null);
     }, []);
@@ -121,6 +127,16 @@ export default function TimelineGame() {
     return (
         <section className="flex flex-col h-screen">
             <div className="p-4">
+                {isGameStarted && (
+                    <>
+                        <ScoreDisplay
+                            score={score}
+                            currentItemIndex={currentItemIndex}
+                            totalItems={totalItems}
+                        />
+                        <FeedbackDisplay feedback={feedback} />
+                    </>
+                )}
                 {!isGameStarted ? (
                     <>
                         <DateSelector
@@ -143,19 +159,16 @@ export default function TimelineGame() {
                         </button>
                     </>
                 ) : (
-                    <button
-                        onClick={resetGame}
-                        className="bg-red-500 text-white px-4 py-2 rounded"
-                    >
-                        Restart Game
-                    </button>
+                    <div className='flex justify-end'>
+                        <button
+                            onClick={resetGame}
+                            className="bg-blue-500 text-white px-2 py-1 rounded"
+                        >
+                            Restart Game
+                        </button>
+                    </div>
                 )}
-                {isGameStarted && (
-                    <>
-                        <ScoreDisplay score={score} />
-                        <FeedbackDisplay feedback={feedback} />
-                    </>
-                )}
+
             </div>
 
             {isGameStarted && (
