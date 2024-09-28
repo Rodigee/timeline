@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import DateSelector from './DateSelector';
 import ScoreDisplay from './ScoreDisplay';
-import FeedbackDisplay from './FeedbackDisplay';
 import CurrentEvent from './CurrentEvent';
 import GameOver from './GameOver';
 import Timeline from './Timeline';
+import Snackbar from './Snackbar';
 
 export default function TimelineGame() {
     const [events, setEvents] = useState([]);
@@ -16,7 +16,7 @@ export default function TimelineGame() {
     const [endYear, setEndYear] = useState('');
     const [gameOver, setGameOver] = useState(false);
     const [score, setScore] = useState(0);
-    const [feedback, setFeedback] = useState(null);
+    const [snackbar, setSnackbar] = useState({ open: false, message: '', isCorrect: false });
     const [recentlyPlacedIndex, setRecentlyPlacedIndex] = useState(null);
     const [isGameStarted, setIsGameStarted] = useState(false);
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
@@ -45,7 +45,6 @@ export default function TimelineGame() {
             setEvents(remainingEvents);
             setScore(0);
             setTotalItems(eventsList.length - 1);
-            setFeedback(null);
             setGameOver(false);
             setRecentlyPlacedIndex(null);
             getNextEvent(remainingEvents);
@@ -72,7 +71,6 @@ export default function TimelineGame() {
         setScore(0);
         setCurrentItemIndex(0);
         setTotalItems(0);
-        setFeedback(null);
         setRecentlyPlacedIndex(null);
     }, []);
 
@@ -97,12 +95,16 @@ export default function TimelineGame() {
 
         if (isCorrect) {
             setScore(prevScore => prevScore + 1);
-            setFeedback({ message: "Correct!", isCorrect: true, event: currentEvent });
+            setSnackbar({
+                open: true,
+                message: `Correct! The correct year was ${currentEvent.year}.`,
+                isCorrect: true
+            });
         } else {
-            setFeedback({
-                message: "Incorrect,",
-                isCorrect: false,
-                event: currentEvent
+            setSnackbar({
+                open: true,
+                message: `Incorrect. The correct year was ${currentEvent.year}`,
+                isCorrect: false
             });
         }
 
@@ -119,7 +121,8 @@ export default function TimelineGame() {
 
         setTimeout(() => {
             setRecentlyPlacedIndex(null);
-        }, 2000);
+            setSnackbar(prev => ({ ...prev, open: false }));
+        }, 3000);
     }, [currentEvent, gameOver, placedEvents, events, getNextEvent]);
 
     return (
@@ -144,24 +147,25 @@ export default function TimelineGame() {
                 </div>
             ) : (
                 <>
-                    <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 p-4 shadow-md">
-                        <ScoreDisplay
-                            score={score}
-                            currentItemIndex={currentItemIndex}
-                            totalItems={totalItems}
-                        />
-                        <FeedbackDisplay feedback={feedback} />
-                        {currentEvent && !gameOver && (
-                            <CurrentEvent event={currentEvent} />
-                        )}
-                        <div className='flex justify-end mt-2'>
+                    <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 p-4 shadow-md flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                                <ScoreDisplay
+                                    score={score}
+                                    currentItemIndex={currentItemIndex}
+                                    totalItems={totalItems}
+                                />
+                            </div>
                             <button
                                 onClick={resetGame}
-                                    className="bg-blue-500 text-white px-2 py-1 rounded hidden md:block"
+                                className="bg-blue-500 text-white px-2 py-1 rounded hidden md:block ml-4"
                             >
                                 Restart Game
                             </button>
                         </div>
+                        {currentEvent && !gameOver && (
+                            <CurrentEvent event={currentEvent} />
+                        )}
                     </div>
 
                     <div className="flex-grow overflow-y-auto p-4">
@@ -184,6 +188,11 @@ export default function TimelineGame() {
                     </div>
                 </>
             )}
+            <Snackbar
+                open={snackbar.open}
+                message={snackbar.message}
+                isCorrect={snackbar.isCorrect}
+            />
         </section>
     );
 }

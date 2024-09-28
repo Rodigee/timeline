@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function ScoreDisplay({ score, currentItemIndex, totalItems }) {
+const ScoreDisplay = ({ score, currentItemIndex, totalItems }) => {
     const progressBoxes = Array(totalItems).fill(0).map((_, index) => (
         <div
             key={index}
@@ -10,16 +10,14 @@ export default function ScoreDisplay({ score, currentItemIndex, totalItems }) {
     ));
 
     return (
-        <div className="mb-4">
-            <div className="flex justify-between items-center mb-2">
-                <div className="text-xl font-bold">
-                    {currentItemIndex} of {totalItems}
-                </div>
-                <div className="flex justify-center items-center">
-                    {progressBoxes}
-                </div>
-                <div className="text-xl font-bold">Score: {score}</div>
+        <div className="flex justify-between items-center w-full">
+            <div>{currentItemIndex} of {totalItems}</div>
+            <div className="flex items-center justify-center">
+                {progressBoxes}
             </div>
+            <div>Score: {score}</div>
         </div>
     );
-}
+};
+
+export default ScoreDisplay;
