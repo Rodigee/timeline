@@ -15,8 +15,9 @@ export default function TimelineGame() {
     const [snackbar, setSnackbar] = useState({ open: false, message: '', isCorrect: false });
     const [recentlyPlacedIndex, setRecentlyPlacedIndex] = useState(null);
     const [isGameStarted, setIsGameStarted] = useState(false);
-    const [currentItemIndex, setCurrentItemIndex] = useState(0);
-    const [totalItems, setTotalItems] = useState(0);
+    const [currentRound, setCurrentRound] = useState(0);
+    const [totalRounds, setTotalRounds] = useState(0);
+    const [answerHistory, setAnswerHistory] = useState([]);
 
     const startGame = useCallback((eventsList) => {
         if (eventsList.length > 0) {
@@ -26,9 +27,11 @@ export default function TimelineGame() {
             const remainingEvents = eventsList.filter((_, index) => index !== randomIndex);
             setEvents(remainingEvents);
             setScore(0);
-            setTotalItems(eventsList.length - 1);
+            setTotalRounds(remainingEvents.length);
             setGameOver(false);
             setRecentlyPlacedIndex(null);
+            setAnswerHistory([]);
+            setCurrentRound(0);
             getNextEvent(remainingEvents);
             setIsGameStarted(true);
         }
@@ -38,7 +41,7 @@ export default function TimelineGame() {
         if (remainingEvents.length > 0) {
             const randomIndex = Math.floor(Math.random() * remainingEvents.length);
             setCurrentEvent(remainingEvents[randomIndex]);
-            setCurrentItemIndex(prevIndex => prevIndex + 1);
+            setCurrentRound(prevRound => prevRound + 1);
             setEvents(remainingEvents.filter((_, index) => index !== randomIndex));
         } else {
             setGameOver(true);
@@ -51,9 +54,10 @@ export default function TimelineGame() {
         setCurrentEvent(null);
         setGameOver(false);
         setScore(0);
-        setCurrentItemIndex(0);
-        setTotalItems(0);
+        setCurrentRound(0);
+        setTotalRounds(0);
         setRecentlyPlacedIndex(null);
+        setAnswerHistory([]);
     }, []);
 
     const handlePlaceEvent = useCallback((guessedIndex) => {
@@ -63,6 +67,8 @@ export default function TimelineGame() {
         const correctIndex = newPlacedEvents.findIndex(event => event.year > currentEvent.year);
         const actualIndex = correctIndex === -1 ? newPlacedEvents.length : correctIndex;
         const isCorrect = guessedIndex === actualIndex;
+
+        setAnswerHistory(prev => [...prev, isCorrect]);
 
         if (isCorrect) {
             setScore(prevScore => prevScore + 1);
@@ -83,7 +89,7 @@ export default function TimelineGame() {
         setPlacedEvents(newPlacedEvents);
         setRecentlyPlacedIndex(actualIndex);
 
-        if (events.length > 0) {
+        if (currentRound < totalRounds) {
             getNextEvent(events);
         } else {
             setCurrentEvent(null);
@@ -94,7 +100,7 @@ export default function TimelineGame() {
             setRecentlyPlacedIndex(null);
             setSnackbar(prev => ({ ...prev, open: false }));
         }, 3000);
-    }, [currentEvent, gameOver, placedEvents, events, getNextEvent]);
+    }, [currentEvent, gameOver, placedEvents, events, getNextEvent, currentRound, totalRounds]);
 
     return (
         <section className="flex flex-col h-screen">
@@ -107,8 +113,10 @@ export default function TimelineGame() {
                             <div className="flex-1">
                                 <ScoreDisplay
                                     score={score}
-                                    currentItemIndex={currentItemIndex}
-                                    totalItems={totalItems}
+                                    currentRound={currentRound}
+                                    gameOver={gameOver}
+                                    totalRounds={totalRounds}
+                                    answerHistory={answerHistory}
                                 />
                             </div>
                             <button

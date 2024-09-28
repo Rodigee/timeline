@@ -19,12 +19,12 @@ export default function Timeline({ placedEvents, gameOver, onPlaceEvent, recentl
         <React.Fragment key={event.year}>
             {index === 0 && !gameOver && <PlaceHereButton index={0} />}
             <div className={`p-2 rounded ${index === recentlyPlacedIndex
-                ? 'bg-yellow-200 dark:bg-yellow-800 font-bold'
+                ? 'bg-yellow-200 dark:bg-yellow-800'
                 : 'bg-gray-100 dark:bg-gray-700'
                 }`}>
                 <div className="flex items-start gap-4">
                     <div className="flex-grow">
-                        <div className="dark:text-white">{formatYear(event.year)}: {event.event}</div>
+                        <div className={`dark:text-white ${index === recentlyPlacedIndex ? 'font-bold' : ''}`}> {formatYear(event.year)}: {event.event}</div>
                         <div className={`text-sm ${event.placementStatus === 'original'
                             ? 'text-gray-600 dark:text-gray-300'
                             : event.placementStatus === 'correct'
@@ -62,7 +62,7 @@ export default function Timeline({ placedEvents, gameOver, onPlaceEvent, recentl
                 </div>
             </div>
             {!gameOver && <PlaceHereButton index={index + 1} />}
-        </React.Fragment>
+        </React.Fragment >
     );
 
     return (
