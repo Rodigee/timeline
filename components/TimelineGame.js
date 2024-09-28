@@ -110,21 +110,23 @@ export default function TimelineGame() {
                 <>
                     <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 p-4 shadow-md flex flex-col gap-2">
                         <div className="flex items-center justify-between">
-                            <div className="flex-1">
+                            {!gameOver && (
                                 <ScoreDisplay
                                     score={score}
                                     currentRound={currentRound}
                                     gameOver={gameOver}
                                     totalRounds={totalRounds}
                                     answerHistory={answerHistory}
+                                    onRestartGame={resetGame}
                                 />
-                            </div>
-                            <button
-                                onClick={resetGame}
-                                className="bg-blue-500 text-white px-2 py-1 rounded hidden md:block ml-4"
-                            >
-                                Restart Game
-                            </button>
+                            )}
+                            {gameOver && (
+                                <GameOver
+                                    score={score}
+                                    totalEvents={placedEvents.length - 1}
+                                    onPlayAgain={resetGame}
+                                />
+                            )}
                         </div>
                         {currentEvent && !gameOver && (
                             <CurrentEvent event={currentEvent} />
@@ -138,16 +140,6 @@ export default function TimelineGame() {
                             onPlaceEvent={handlePlaceEvent}
                             recentlyPlacedIndex={recentlyPlacedIndex}
                         />
-
-                        {gameOver && (
-                            <div className="mt-4">
-                                <GameOver
-                                    score={score}
-                                    totalEvents={placedEvents.length - 1}
-                                    onPlayAgain={resetGame}
-                                />
-                            </div>
-                        )}
                     </div>
                 </>
             )}

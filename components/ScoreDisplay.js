@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ScoreDisplay = ({ score, currentRound, gameOver, totalRounds, answerHistory }) => {
+const ScoreDisplay = ({ score, currentRound, gameOver, totalRounds, answerHistory, onRestartGame }) => {
     const progressBoxes = Array(totalRounds).fill(0).map((_, index) => {
         let bgColor = 'bg-white';
         let borderColor = 'border-gray-300';
@@ -26,7 +26,15 @@ const ScoreDisplay = ({ score, currentRound, gameOver, totalRounds, answerHistor
             <div className="flex items-center justify-center">
                 {progressBoxes}
             </div>
-            <div>Score: {score}</div>
+            <div className="flex items-center">
+                <div className="mr-4">Score: {score}</div>
+                <button
+                    onClick={onRestartGame}
+                    className="bg-blue-500 text-white px-2 py-1 rounded hidden md:block"
+                >
+                    Restart Game
+                </button>
+            </div>
         </div>
     );
 };
