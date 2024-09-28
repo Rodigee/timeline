@@ -1,19 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import DateSelector from './DateSelector';
+import React, { useState, useCallback } from 'react';
 import ScoreDisplay from './ScoreDisplay';
 import CurrentEvent from './CurrentEvent';
 import GameOver from './GameOver';
 import Timeline from './Timeline';
 import Snackbar from './Snackbar';
+import PreGameUI from './PreGameUI';
 
 export default function TimelineGame() {
     const [events, setEvents] = useState([]);
     const [placedEvents, setPlacedEvents] = useState([]);
     const [currentEvent, setCurrentEvent] = useState(null);
-    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-    const [selectedDay, setSelectedDay] = useState(new Date().getDate());
-    const [startYear, setStartYear] = useState('');
-    const [endYear, setEndYear] = useState('');
     const [gameOver, setGameOver] = useState(false);
     const [score, setScore] = useState(0);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', isCorrect: false });
@@ -21,20 +17,6 @@ export default function TimelineGame() {
     const [isGameStarted, setIsGameStarted] = useState(false);
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
     const [totalItems, setTotalItems] = useState(0);
-
-    useEffect(() => {
-        const today = new Date();
-        setSelectedMonth(today.getMonth() + 1);
-        setSelectedDay(today.getDate());
-    }, []);
-
-    const fetchEvents = useCallback((month, day, start, end) => {
-        const startYearParam = start ? `&startYear=${start}` : '';
-        const endYearParam = end ? `&endYear=${end}` : '';
-        return fetch(`/api/wikiHistoricalEvents?month=${month}&day=${day}${startYearParam}${endYearParam}`)
-            .then(response => response.json())
-            .catch(error => console.error(error));
-    }, []);
 
     const startGame = useCallback((eventsList) => {
         if (eventsList.length > 0) {
@@ -72,17 +54,6 @@ export default function TimelineGame() {
         setCurrentItemIndex(0);
         setTotalItems(0);
         setRecentlyPlacedIndex(null);
-    }, []);
-
-    const handleStartGame = useCallback(() => {
-        fetchEvents(selectedMonth, selectedDay, startYear, endYear).then(json => {
-            startGame(json);
-        });
-    }, [fetchEvents, selectedMonth, selectedDay, startYear, endYear, startGame]);
-
-    const handleDateChange = useCallback((month, day) => {
-        setSelectedMonth(month);
-        setSelectedDay(day);
     }, []);
 
     const handlePlaceEvent = useCallback((guessedIndex) => {
@@ -128,23 +99,7 @@ export default function TimelineGame() {
     return (
         <section className="flex flex-col h-screen">
             {!isGameStarted ? (
-                <div className="p-4">
-                    <DateSelector
-                        selectedMonth={selectedMonth}
-                        selectedDay={selectedDay}
-                        onDateChange={handleDateChange}
-                        startYear={startYear}
-                        endYear={endYear}
-                        onStartYearChange={setStartYear}
-                        onEndYearChange={setEndYear}
-                    />
-                    <button
-                        onClick={handleStartGame}
-                        className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
-                    >
-                        Start Game
-                    </button>
-                </div>
+                <PreGameUI onGameStart={startGame} />
             ) : (
                 <>
                     <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 p-4 shadow-md flex flex-col gap-2">
