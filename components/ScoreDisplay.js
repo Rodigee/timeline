@@ -3,13 +3,17 @@ import React from 'react';
 const ScoreDisplay = ({ score, currentRound, gameOver, totalRounds, answerHistory }) => {
     const progressBoxes = Array(totalRounds).fill(0).map((_, index) => {
         let bgColor = 'bg-white';
+        let borderColor = 'border-gray-300';
         if (index < currentRound - 1 || gameOver) {
             bgColor = answerHistory[index] ? 'bg-green-500' : 'bg-red-500';
+        }
+        else if (index === currentRound - 1) {
+            borderColor = 'border-black';
         }
         return (
             <div
                 key={index}
-                className={`w-4 h-4 border border-gray-300 mx-0.5 ${bgColor}`}
+                className={`w-4 h-4 border mx-0.5 ${bgColor} ${borderColor}`}
             ></div>
         );
     });
