@@ -100,8 +100,7 @@ export default function TimelineGame() {
             setFeedback({ message: "Correct!", isCorrect: true, event: currentEvent });
         } else {
             setFeedback({
-                message: "Incorrect! The event belongs " +
-                    (actualIndex < guessedIndex ? "earlier" : "later") + " in the timeline.",
+                message: "Incorrect,",
                 isCorrect: false,
                 event: currentEvent
             });
@@ -125,72 +124,65 @@ export default function TimelineGame() {
 
     return (
         <section className="flex flex-col h-screen">
-            <div className="p-4">
-                {isGameStarted && (
-                    <>
+            {!isGameStarted ? (
+                <div className="p-4">
+                    <DateSelector
+                        selectedMonth={selectedMonth}
+                        selectedDay={selectedDay}
+                        onDateChange={handleDateChange}
+                        startYear={startYear}
+                        endYear={endYear}
+                        onStartYearChange={setStartYear}
+                        onEndYearChange={setEndYear}
+                    />
+                    <button
+                        onClick={handleStartGame}
+                        className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+                    >
+                        Start Game
+                    </button>
+                </div>
+            ) : (
+                <>
+                    <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 p-4 shadow-md">
                         <ScoreDisplay
                             score={score}
                             currentItemIndex={currentItemIndex}
                             totalItems={totalItems}
                         />
                         <FeedbackDisplay feedback={feedback} />
-                    </>
-                )}
-                {!isGameStarted ? (
-                    <>
-                        <DateSelector
-                            selectedMonth={selectedMonth}
-                            selectedDay={selectedDay}
-                            onDateChange={handleDateChange}
-                            startYear={startYear}
-                            endYear={endYear}
-                            onStartYearChange={setStartYear}
-                            onEndYearChange={setEndYear}
-                        />
-                        <button
-                            onClick={handleStartGame}
-                            className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
-                        >
-                            Start Game
-                        </button>
-                    </>
-                ) : (
-                    <div className='flex justify-end'>
-                        <button
-                            onClick={resetGame}
-                            className="bg-blue-500 text-white px-2 py-1 rounded"
-                        >
-                            Restart Game
-                        </button>
-                    </div>
-                )}
-            </div>
-
-            {isGameStarted && (
-                <div className="flex-grow overflow-y-auto p-4 pb-32">
-                    <Timeline
-                        placedEvents={placedEvents}
-                        gameOver={gameOver}
-                        onPlaceEvent={handlePlaceEvent}
-                        recentlyPlacedIndex={recentlyPlacedIndex}
-                    />
-
-                    {gameOver && (
-                        <div className="mt-4">
-                            <GameOver
-                                score={score}
-                                totalEvents={placedEvents.length - 1}
-                                onPlayAgain={resetGame}
-                            />
+                        {currentEvent && !gameOver && (
+                            <CurrentEvent event={currentEvent} />
+                        )}
+                        <div className='flex justify-end mt-2'>
+                            <button
+                                onClick={resetGame}
+                                    className="bg-blue-500 text-white px-2 py-1 rounded hidden md:block"
+                            >
+                                Restart Game
+                            </button>
                         </div>
-                    )}
-                </div>
-            )}
+                    </div>
 
-            {currentEvent && !gameOver && isGameStarted && (
-                <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 shadow-md p-4">
-                    <CurrentEvent event={currentEvent} />
-                </div>
+                    <div className="flex-grow overflow-y-auto p-4">
+                        <Timeline
+                            placedEvents={placedEvents}
+                            gameOver={gameOver}
+                            onPlaceEvent={handlePlaceEvent}
+                            recentlyPlacedIndex={recentlyPlacedIndex}
+                        />
+
+                        {gameOver && (
+                            <div className="mt-4">
+                                <GameOver
+                                    score={score}
+                                    totalEvents={placedEvents.length - 1}
+                                    onPlayAgain={resetGame}
+                                />
+                            </div>
+                        )}
+                    </div>
+                </>
             )}
         </section>
     );

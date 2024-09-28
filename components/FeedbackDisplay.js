@@ -8,7 +8,7 @@ export default function FeedbackDisplay({ feedback }) {
         <div className='flex items-center gap-4'>
             <div className="mb-4 h-6">
                 <div className={`font-bold ${feedback.isCorrect ? 'text-green-600' : 'text-red-600'}`}>
-                    {feedback.message} This event happened in {formatYear(feedback.event.year)}.
+                    {feedback.message} {formatYear(feedback.event.year)}
                 </div>
             </div>
             {feedback.event.thumbnail_url && (
