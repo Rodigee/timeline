@@ -12,9 +12,9 @@ const PreGameUI = ({ onGameStart }) => {
         setSelectedMonth(today.getMonth() + 1);
         setSelectedDay(today.getDate());
 
-        // Load the Bebas Neue font
+        // Load the Trajan Pro font
         const link = document.createElement('link');
-        link.href = 'https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap';
+        link.href = 'https://fonts.googleapis.com/css2?family=Trajan+Pro:wght@400;700&display=swap';
         link.rel = 'stylesheet';
         document.head.appendChild(link);
     }, []);
@@ -46,8 +46,8 @@ const PreGameUI = ({ onGameStart }) => {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen w-full px-4 sm:px-6 lg:px-8">
             <div className="w-full max-w-lg bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-lg shadow-md">
-                <h1 className="text-5xl font-bold text-center mb-4 text-gray-800 dark:text-white" style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.05em', textShadow: '2px 2px 4px rgba(0,0,0,0.1)' }}>
-                    TIMELINE
+                <h1 className="text-5xl text-center mb-4 text-gray-800 dark:text-white" style={{ fontFamily: "'Trajan Pro', serif", letterSpacing: '0.05em', textShadow: '2px 2px 4px rgba(0,0,0,0.1)' }}>
+                    LOST IN TIME
                 </h1>
                 <h2 className="text-xl text-center mb-6 text-gray-600 dark:text-gray-300">
                     <strong>Can you place 10 notable events in chronological order?</strong>
