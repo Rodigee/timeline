@@ -73,13 +73,13 @@ export default function DateSelector({ selectedMonth, selectedDay, onDateChange,
                         ))}
                     </select>
                 </div>
-                <button
-                    onClick={handleRandomDate}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition-colors duration-200 text-sm"
-                >
-                    Random Date
-                </button>
             </div>
+            <button
+                onClick={handleRandomDate}
+                className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition-colors duration-200 text-sm"
+            >
+                Random Date
+            </button>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label htmlFor="startYear" className="block mb-2 text-sm font-medium">Start Year (optional):</label>

@@ -11,6 +11,12 @@ const PreGameUI = ({ onGameStart }) => {
         const today = new Date();
         setSelectedMonth(today.getMonth() + 1);
         setSelectedDay(today.getDate());
+
+        // Load the Bebas Neue font
+        const link = document.createElement('link');
+        link.href = 'https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap';
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
     }, []);
 
     const handleDateChange = useCallback((month, day) => {
@@ -39,7 +45,21 @@ const PreGameUI = ({ onGameStart }) => {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen w-full px-4 sm:px-6 lg:px-8">
-            <div className="w-full max-w-md bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-md">
+            <div className="w-full max-w-lg bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-lg shadow-md">
+                <h1 className="text-5xl font-bold text-center mb-4 text-gray-800 dark:text-white" style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.05em', textShadow: '2px 2px 4px rgba(0,0,0,0.1)' }}>
+                    TIMELINE
+                </h1>
+                <h2 className="text-xl text-center mb-6 text-gray-600 dark:text-gray-300">
+                    <strong>Can you place 10 notable events in chronological order?</strong>
+                </h2>
+                <div className="mb-6 border-b border-gray-300 dark:border-gray-700 pb-6">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-3">
+                        Select a date to see events that appeared that day in history.
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
+                        You can also specify a year range to focus on a particular era.
+                    </p>
+                </div>
                 <DateSelector
                     selectedMonth={selectedMonth}
                     selectedDay={selectedDay}
@@ -51,7 +71,7 @@ const PreGameUI = ({ onGameStart }) => {
                 />
                 <button
                     onClick={handleStartGame}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mt-4 w-full transition-colors duration-200"
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg mt-6 w-full transition-colors duration-200 text-lg font-semibold"
                 >
                     Start Game
                 </button>
