@@ -108,7 +108,7 @@ export default function TimelineGame() {
                 <PreGameUI onGameStart={startGame} />
             ) : (
                 <>
-                    <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 p-4 shadow-md flex flex-col gap-2">
+                    <div className="sticky top-0 bg-white dark:bg-slate-900 z-20 p-4 shadow-md flex flex-col gap-2">
                         <div className="flex items-center justify-between">
                             {!gameOver && (
                                 <ScoreDisplay

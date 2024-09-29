@@ -13,7 +13,6 @@ export default function DateSelector({ selectedMonth, selectedDay, onDateChange,
         if (thirtyOneDayMonths.includes(month)) return 31;
         if (thirtyDayMonths.includes(month)) return 30;
 
-        // February, always including the 29th
         return 29;
     }, []);
 
@@ -46,15 +45,15 @@ export default function DateSelector({ selectedMonth, selectedDay, onDateChange,
     }, [getRandomDate, onDateChange]);
 
     return (
-        <div className="mb-4 space-y-2">
-            <div className="flex items-center space-x-2">
+        <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label htmlFor="monthPicker" className="block mb-2">Select a month:</label>
+                    <label htmlFor="monthPicker" className="block mb-2 text-sm font-medium">Select a month:</label>
                     <select
                         id="monthPicker"
                         value={selectedMonth}
                         onChange={handleMonthChange}
-                        className="border rounded p-2 bg-white dark:bg-gray-700 text-black dark:text-white"
+                        className="w-full border rounded p-2 bg-white dark:bg-gray-700 text-black dark:text-white text-sm"
                     >
                         {months.map((month, index) => (
                             <option key={month} value={index + 1}>{month}</option>
@@ -62,12 +61,12 @@ export default function DateSelector({ selectedMonth, selectedDay, onDateChange,
                     </select>
                 </div>
                 <div>
-                    <label htmlFor="dayPicker" className="block mb-2">Select a day:</label>
+                    <label htmlFor="dayPicker" className="block mb-2 text-sm font-medium">Select a day:</label>
                     <select
                         id="dayPicker"
                         value={selectedDay}
                         onChange={handleDayChange}
-                        className="border rounded p-2 bg-white dark:bg-gray-700 text-black dark:text-white"
+                        className="w-full border rounded p-2 bg-white dark:bg-gray-700 text-black dark:text-white text-sm"
                     >
                         {days.map(day => (
                             <option key={day} value={day}>{day}</option>
@@ -76,32 +75,32 @@ export default function DateSelector({ selectedMonth, selectedDay, onDateChange,
                 </div>
                 <button
                     onClick={handleRandomDate}
-                    className="bg-green-600 text-white px-4 py-2 rounded mt-6"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition-colors duration-200 text-sm"
                 >
                     Random Date
                 </button>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label htmlFor="startYear" className="block mb-2">Start Year (optional):</label>
+                    <label htmlFor="startYear" className="block mb-2 text-sm font-medium">Start Year (optional):</label>
                     <input
                         type="number"
                         id="startYear"
                         value={startYear}
                         onChange={(e) => onStartYearChange(e.target.value)}
                         placeholder="e.g. -500 for 500 BCE"
-                        className="border rounded p-2 bg-white dark:bg-gray-700 text-black dark:text-white"
+                        className="w-full border rounded p-2 bg-white dark:bg-gray-700 text-black dark:text-white text-sm"
                     />
                 </div>
                 <div>
-                    <label htmlFor="endYear" className="block mb-2">End Year (optional):</label>
+                    <label htmlFor="endYear" className="block mb-2 text-sm font-medium">End Year (optional):</label>
                     <input
                         type="number"
                         id="endYear"
                         value={endYear}
                         onChange={(e) => onEndYearChange(e.target.value)}
                         placeholder="e.g. 2023"
-                        className="border rounded p-2 bg-white dark:bg-gray-700 text-black dark:text-white"
+                        className="w-full border rounded p-2 bg-white dark:bg-gray-700 text-black dark:text-white text-sm"
                     />
                 </div>
             </div>

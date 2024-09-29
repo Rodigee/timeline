@@ -31,7 +31,6 @@ const PreGameUI = ({ onGameStart }) => {
             if (eventsList.length > 0) {
                 onGameStart(eventsList);
             } else {
-                // Handle case when no events are returned
                 console.error('No events found for the selected date range');
                 // You might want to show an error message to the user here
             }
@@ -39,8 +38,8 @@ const PreGameUI = ({ onGameStart }) => {
     }, [fetchEvents, selectedMonth, selectedDay, startYear, endYear, onGameStart]);
 
     return (
-        <div className="flex flex-col items-center justify-center h-full">
-            <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md">
+        <div className="flex flex-col items-center justify-center min-h-screen w-full px-4 sm:px-6 lg:px-8">
+            <div className="w-full max-w-md bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-md">
                 <DateSelector
                     selectedMonth={selectedMonth}
                     selectedDay={selectedDay}
@@ -52,7 +51,7 @@ const PreGameUI = ({ onGameStart }) => {
                 />
                 <button
                     onClick={handleStartGame}
-                    className="bg-blue-500 text-white px-4 py-2 rounded mt-4 w-full"
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mt-4 w-full transition-colors duration-200"
                 >
                     Start Game
                 </button>
