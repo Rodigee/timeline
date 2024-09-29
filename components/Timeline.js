@@ -21,7 +21,7 @@ export default function Timeline({ placedEvents, gameOver, onPlaceEvent, recentl
             <div className={`p-2 rounded ${index === recentlyPlacedIndex
                 ? 'bg-yellow-200 dark:bg-yellow-800'
                 : 'bg-gray-100 dark:bg-gray-700'
-                }`}>
+                } relative z-10`}>
                 <div className="flex items-start gap-4">
                     <div className="flex-grow">
                         <div className={`dark:text-white ${index === recentlyPlacedIndex ? 'font-bold' : ''}`}> {formatYear(event.year)}: {event.event}</div>
@@ -62,13 +62,20 @@ export default function Timeline({ placedEvents, gameOver, onPlaceEvent, recentl
                 </div>
             </div>
             {!gameOver && <PlaceHereButton index={index + 1} />}
-        </React.Fragment >
+        </React.Fragment>
     );
 
     return (
-        <div className="mb-4">
-            <div className="grid grid-cols-1 gap-2">
+        <div className="relative">
+            <div className="absolute left-1/2 top-12 bottom-12 w-0.5 bg-gray-300 dark:bg-gray-600 -translate-x-1/2 z-0"></div>
+            <div className="text-center py-4 mb-4 relative z-10">
+                <span className="text-sm font-bold text-gray-600 dark:text-gray-300">BEFORE</span>
+            </div>
+            <div className="grid grid-cols-1 gap-2 relative mb-4">
                 {placedEvents.map(renderTimelineItem)}
+            </div>
+            <div className="text-center py-4 mt-4 relative z-10">
+                <span className="text-sm font-bold text-gray-600 dark:text-gray-300">AFTER</span>
             </div>
             {popupImage && (
                 <ImagePopup imageUrl={popupImage} onClose={() => setPopupImage(null)} />
