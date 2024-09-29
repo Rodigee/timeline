@@ -80,6 +80,9 @@ export default function DateSelector({ selectedMonth, selectedDay, onDateChange,
             >
                 Random Date
             </button>
+            <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
+                You can also specify a year range to focus on a particular era.
+            </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label htmlFor="startYear" className="block mb-2 text-sm font-medium">Start Year (optional):</label>

@@ -52,14 +52,9 @@ const PreGameUI = ({ onGameStart }) => {
                 <h2 className="text-xl text-center mb-6 text-gray-600 dark:text-gray-300">
                     <strong>Can you place 10 notable events in chronological order?</strong>
                 </h2>
-                <div className="mb-6 border-b border-gray-300 dark:border-gray-700 pb-6">
-                    <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-3">
-                        Select a date to see events that appeared that day in history.
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-                        You can also specify a year range to focus on a particular era.
-                    </p>
-                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-3">
+                    Select a date to see events that appeared that day in history.
+                </p>
                 <DateSelector
                     selectedMonth={selectedMonth}
                     selectedDay={selectedDay}
