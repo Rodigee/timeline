@@ -21,3 +21,15 @@ model WikiHistoricalEvent {
 
   @@unique([year, month, day, event])
 }
+
+model Invention {
+  id            Int      @id @default(autoincrement())
+  year          Int?
+  event         String
+  thumbnail_url String?
+  extract       String?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now()) @updatedAt
+
+  @@unique([year, event])
+}

@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import DateSelector from './DateSelector';
+import YearRangeSelector from './YearRangeSelector';
 
 const PreGameUI = ({ onGameStart }) => {
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [selectedDay, setSelectedDay] = useState(new Date().getDate());
     const [startYear, setStartYear] = useState('');
     const [endYear, setEndYear] = useState('');
+    const [eventType, setEventType] = useState('historical');
 
     useEffect(() => {
         const today = new Date();
@@ -24,24 +26,29 @@ const PreGameUI = ({ onGameStart }) => {
         setSelectedDay(day);
     }, []);
 
-    const fetchEvents = useCallback((month, day, start, end) => {
-        const startYearParam = start ? `&startYear=${start}` : '';
-        const endYearParam = end ? `&endYear=${end}` : '';
-        return fetch(`/api/wikiHistoricalEvents?month=${month}&day=${day}${startYearParam}${endYearParam}`)
+    const fetchEvents = useCallback(() => {
+        const startYearParam = startYear ? `&startYear=${startYear}` : '';
+        const endYearParam = endYear ? `&endYear=${endYear}` : '';
+        const endpoint = eventType === 'inventions' ? '/api/inventions' : '/api/wikiHistoricalEvents';
+        const queryParams = eventType === 'inventions'
+            ? `${startYearParam}${endYearParam}`
+            : `month=${selectedMonth}&day=${selectedDay}${startYearParam}${endYearParam}`;
+
+        return fetch(`${endpoint}?${queryParams}`)
             .then(response => response.json())
             .catch(error => console.error(error));
-    }, []);
+    }, [eventType, selectedMonth, selectedDay, startYear, endYear]);
 
     const handleStartGame = useCallback(() => {
-        fetchEvents(selectedMonth, selectedDay, startYear, endYear).then(eventsList => {
+        fetchEvents().then(eventsList => {
             if (eventsList.length > 0) {
                 onGameStart(eventsList);
             } else {
-                console.error('No events found for the selected date range');
+                console.error('No events found for the selected criteria');
                 // You might want to show an error message to the user here
             }
         });
-    }, [fetchEvents, selectedMonth, selectedDay, startYear, endYear, onGameStart]);
+    }, [fetchEvents, onGameStart]);
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen w-full px-4 sm:px-6 lg:px-8">
@@ -52,13 +59,43 @@ const PreGameUI = ({ onGameStart }) => {
                 <h2 className="text-xl text-center mb-6 text-gray-600 dark:text-gray-300">
                     <strong>Can you place 10 notable events in chronological order?</strong>
                 </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-3">
-                    Select a date to see events that appeared that day in history.
-                </p>
-                <DateSelector
-                    selectedMonth={selectedMonth}
-                    selectedDay={selectedDay}
-                    onDateChange={handleDateChange}
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Event Type
+                    </label>
+                    <div className="flex space-x-4">
+                        <label className="inline-flex items-center">
+                            <input
+                                type="radio"
+                                className="form-radio"
+                                name="eventType"
+                                value="historical"
+                                checked={eventType === 'historical'}
+                                onChange={() => setEventType('historical')}
+                            />
+                            <span className="ml-2">Historical Events</span>
+                        </label>
+                        <label className="inline-flex items-center">
+                            <input
+                                type="radio"
+                                className="form-radio"
+                                name="eventType"
+                                value="inventions"
+                                checked={eventType === 'inventions'}
+                                onChange={() => setEventType('inventions')}
+                            />
+                            <span className="ml-2">Inventions</span>
+                        </label>
+                    </div>
+                </div>
+                {eventType === 'historical' && (
+                    <DateSelector
+                        selectedMonth={selectedMonth}
+                        selectedDay={selectedDay}
+                        onDateChange={handleDateChange}
+                    />
+                )}
+                <YearRangeSelector
                     startYear={startYear}
                     endYear={endYear}
                     onStartYearChange={setStartYear}

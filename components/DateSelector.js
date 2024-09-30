@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 
-export default function DateSelector({ selectedMonth, selectedDay, onDateChange, startYear, endYear, onStartYearChange, onEndYearChange }) {
+export default function DateSelector({ selectedMonth, selectedDay, onDateChange }) {
     const months = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
@@ -45,7 +45,7 @@ export default function DateSelector({ selectedMonth, selectedDay, onDateChange,
     }, [getRandomDate, onDateChange]);
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 mb-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label htmlFor="monthPicker" className="block mb-2 text-sm font-medium">Select a month:</label>
@@ -74,38 +74,13 @@ export default function DateSelector({ selectedMonth, selectedDay, onDateChange,
                     </select>
                 </div>
             </div>
-            <button
-                onClick={handleRandomDate}
-                className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition-colors duration-200 text-sm"
-            >
-                Random Date
-            </button>
-            <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-                You can also specify a year range to focus on a particular era.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label htmlFor="startYear" className="block mb-2 text-sm font-medium">Start Year (optional):</label>
-                    <input
-                        type="number"
-                        id="startYear"
-                        value={startYear}
-                        onChange={(e) => onStartYearChange(e.target.value)}
-                        placeholder="e.g. -500 for 500 BCE"
-                        className="w-full border rounded p-2 bg-white dark:bg-gray-700 text-black dark:text-white text-sm"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="endYear" className="block mb-2 text-sm font-medium">End Year (optional):</label>
-                    <input
-                        type="number"
-                        id="endYear"
-                        value={endYear}
-                        onChange={(e) => onEndYearChange(e.target.value)}
-                        placeholder="e.g. 2023"
-                        className="w-full border rounded p-2 bg-white dark:bg-gray-700 text-black dark:text-white text-sm"
-                    />
-                </div>
+            <div className="flex justify-end">
+                <button
+                    onClick={handleRandomDate}
+                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition-colors duration-200 text-sm"
+                >
+                    Random Date
+                </button>
             </div>
         </div>
     );
