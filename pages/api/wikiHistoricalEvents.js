@@ -1,7 +1,8 @@
 import prisma from '@/lib/prisma'
+import { shuffleArray } from './utils'; 
 
 export default async function handler(req, res) {
-    const { month, day, startYear, endYear } = req.query
+    const { month, day, startYear, endYear, random } = req.query
 
     try {
         const whereClause = {
@@ -19,14 +20,29 @@ export default async function handler(req, res) {
             }
         }
 
-        const events = await prisma.wikiHistoricalEvent.findMany({
-            where: whereClause,
-            orderBy: [
-                { year: 'asc' },
-                { event: 'asc' }
-            ],
-            take: 10
-        })
+        let events;
+
+        if (random === 'true') {
+            events = await prisma.wikiHistoricalEvent.findMany({
+                where: whereClause,
+                orderBy: [
+                    { year: 'asc' },
+                    { event: 'asc' }
+                ]
+            })
+
+            events = shuffleArray(events).slice(0, 10);
+        } else {
+            // take the first 10 events
+            events = await prisma.wikiHistoricalEvent.findMany({
+                where: whereClause,
+                orderBy: [
+                    { year: 'asc' },
+                    { event: 'asc' }
+                ],
+                take: 10
+            })
+        }
 
         res.status(200).json(events)
     } catch (error) {

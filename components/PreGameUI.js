@@ -44,7 +44,7 @@ const PreGameUI = ({ onGameStart }) => {
             ? `${startYearParam}${endYearParam}`
             : `month=${selectedMonth}&day=${selectedDay}${startYearParam}${endYearParam}`;
 
-        return fetch(`${endpoint}?${queryParams}`)
+        return fetch(`${endpoint}?${queryParams}&random=true`)
             .then(response => response.json())
             .catch(error => {
                 console.error(error);
