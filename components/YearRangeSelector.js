@@ -1,6 +1,6 @@
 import React from 'react';
 
-const YearRangeSelector = ({ startYear, endYear, onStartYearChange, onEndYearChange }) => {
+const YearRangeSelector = ({ startYear, endYear, onStartYearChange, onEndYearChange, onInputFocus }) => {
     return (
         <div className="space-y-4">
             <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
@@ -14,6 +14,7 @@ const YearRangeSelector = ({ startYear, endYear, onStartYearChange, onEndYearCha
                         id="startYear"
                         value={startYear}
                         onChange={(e) => onStartYearChange(e.target.value)}
+                        onFocus={onInputFocus}
                         placeholder="e.g. -500 for 500 BCE"
                         className="w-full border rounded p-2 bg-white dark:bg-gray-700 text-black dark:text-white text-sm"
                     />
@@ -25,6 +26,7 @@ const YearRangeSelector = ({ startYear, endYear, onStartYearChange, onEndYearCha
                         id="endYear"
                         value={endYear}
                         onChange={(e) => onEndYearChange(e.target.value)}
+                        onFocus={onInputFocus}
                         placeholder="e.g. 2023"
                         className="w-full border rounded p-2 bg-white dark:bg-gray-700 text-black dark:text-white text-sm"
                     />

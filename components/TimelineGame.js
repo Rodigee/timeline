@@ -64,20 +64,34 @@ export default function TimelineGame() {
         if (!currentEvent || gameOver) return;
 
         const newPlacedEvents = [...placedEvents];
-        const correctIndex = newPlacedEvents.findIndex(event => event.year > currentEvent.year);
-        const actualIndex = correctIndex === -1 ? newPlacedEvents.length : correctIndex;
-        const isCorrect = guessedIndex === actualIndex;
+        let correctIndices = [];
+
+        // Find all correct indices
+        for (let i = 0; i <= newPlacedEvents.length; i++) {
+            if (i === newPlacedEvents.length || currentEvent.year < newPlacedEvents[i].year) {
+                correctIndices.push(i);
+                break;
+            }
+            if (currentEvent.year === newPlacedEvents[i].year) {
+                correctIndices.push(i);
+            }
+        }
+
+        const isCorrect = correctIndices.includes(guessedIndex);
 
         setAnswerHistory(prev => [...prev, isCorrect]);
 
+        let actualIndex;
         if (isCorrect) {
             setScore(prevScore => prevScore + 1);
+            actualIndex = guessedIndex;
             setSnackbar({
                 open: true,
                 message: `Correct! The correct year was ${currentEvent.year}.`,
                 isCorrect: true
             });
         } else {
+            actualIndex = correctIndices[0]; // Place at the first correct position if guessed incorrectly
             setSnackbar({
                 open: true,
                 message: `Incorrect. The correct year was ${currentEvent.year}`,

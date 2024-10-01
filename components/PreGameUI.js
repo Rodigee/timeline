@@ -8,6 +8,7 @@ const PreGameUI = ({ onGameStart }) => {
     const [startYear, setStartYear] = useState('');
     const [endYear, setEndYear] = useState('');
     const [eventType, setEventType] = useState('historical');
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         const today = new Date();
@@ -26,6 +27,15 @@ const PreGameUI = ({ onGameStart }) => {
         setSelectedDay(day);
     }, []);
 
+    const handleEventTypeChange = useCallback((newEventType) => {
+        setEventType(newEventType);
+        setErrorMessage(''); // Clear the error message when event type changes
+    }, []);
+
+    const handleYearInputFocus = useCallback(() => {
+        setErrorMessage(''); // Clear the error message when year input is focused
+    }, []);
+
     const fetchEvents = useCallback(() => {
         const startYearParam = startYear ? `&startYear=${startYear}` : '';
         const endYearParam = endYear ? `&endYear=${endYear}` : '';
@@ -36,17 +46,24 @@ const PreGameUI = ({ onGameStart }) => {
 
         return fetch(`${endpoint}?${queryParams}`)
             .then(response => response.json())
-            .catch(error => console.error(error));
+            .catch(error => {
+                console.error(error);
+                throw error;
+            });
     }, [eventType, selectedMonth, selectedDay, startYear, endYear]);
 
     const handleStartGame = useCallback(() => {
+        setErrorMessage(''); // Clear any previous error messages
         fetchEvents().then(eventsList => {
             if (eventsList.length > 0) {
                 onGameStart(eventsList);
             } else {
                 console.error('No events found for the selected criteria');
-                // You might want to show an error message to the user here
+                setErrorMessage('No events found for the selected date range. Please try different options.');
             }
+        }).catch(error => {
+            console.error('Error fetching events:', error);
+            setErrorMessage('An error occurred while fetching events. Please try again later.');
         });
     }, [fetchEvents, onGameStart]);
 
@@ -71,7 +88,7 @@ const PreGameUI = ({ onGameStart }) => {
                                 name="eventType"
                                 value="historical"
                                 checked={eventType === 'historical'}
-                                onChange={() => setEventType('historical')}
+                                onChange={() => handleEventTypeChange('historical')}
                             />
                             <span className="ml-2">Historical Events</span>
                         </label>
@@ -82,7 +99,7 @@ const PreGameUI = ({ onGameStart }) => {
                                 name="eventType"
                                 value="inventions"
                                 checked={eventType === 'inventions'}
-                                onChange={() => setEventType('inventions')}
+                                onChange={() => handleEventTypeChange('inventions')}
                             />
                             <span className="ml-2">Inventions</span>
                         </label>
@@ -100,7 +117,13 @@ const PreGameUI = ({ onGameStart }) => {
                     endYear={endYear}
                     onStartYearChange={setStartYear}
                     onEndYearChange={setEndYear}
+                    onInputFocus={handleYearInputFocus}
                 />
+                {errorMessage && (
+                    <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded relative" role="alert">
+                        <span className="block sm:inline">{errorMessage}</span>
+                    </div>
+                )}
                 <button
                     onClick={handleStartGame}
                     className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg mt-6 w-full transition-colors duration-200 text-lg font-semibold"
