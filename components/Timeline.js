@@ -15,7 +15,7 @@ export default function Timeline({ placedEvents, gameOver, onPlaceEvent, recentl
             <div className="grid grid-cols-1 gap-2 relative mb-4">
                 {placedEvents.map((event, index) => (
                     <TimelineItem
-                        key={event.year}
+                        key={event.year + event.event}
                         event={event}
                         index={index}
                         gameOver={gameOver}

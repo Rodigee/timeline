@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { formatYear } from './Utils';
 import ScoreDisplay from './ScoreDisplay';
 import CurrentEvent from './CurrentEvent';
 import GameOver from './GameOver';
@@ -87,14 +88,14 @@ export default function TimelineGame() {
             actualIndex = guessedIndex;
             setSnackbar({
                 open: true,
-                message: `Correct! The correct year was ${currentEvent.year}.`,
+                message: `Correct! The correct year was ${formatYear(currentEvent.year)}.`,
                 isCorrect: true
             });
         } else {
             actualIndex = correctIndices[0]; // Place at the first correct position if guessed incorrectly
             setSnackbar({
                 open: true,
-                message: `Incorrect. The correct year was ${currentEvent.year}`,
+                message: `Incorrect. The correct year was ${formatYear(currentEvent.year)}`,
                 isCorrect: false
             });
         }

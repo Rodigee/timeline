@@ -5,7 +5,7 @@ const ScoreDisplay = ({ score, currentRound, gameOver, totalRounds, answerHistor
         let bgColor = 'bg-white';
         let borderColor = 'border-gray-300';
         if (index < currentRound - 1 || gameOver) {
-            bgColor = answerHistory[index] ? 'bg-green-500' : 'bg-red-500';
+            bgColor = answerHistory[index] ? 'bg-green-700' : 'bg-red-500';
         }
         else if (index === currentRound - 1) {
             borderColor = 'border-black';
