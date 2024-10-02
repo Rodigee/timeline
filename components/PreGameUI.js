@@ -9,6 +9,7 @@ const PreGameUI = ({ onGameStart }) => {
     const [endYear, setEndYear] = useState('');
     const [eventType, setEventType] = useState('historical');
     const [errorMessage, setErrorMessage] = useState('');
+    const [useDragAndDrop, setUseDragAndDrop] = useState(false);
 
     useEffect(() => {
         const today = new Date();
@@ -56,7 +57,7 @@ const PreGameUI = ({ onGameStart }) => {
         setErrorMessage(''); // Clear any previous error messages
         fetchEvents().then(eventsList => {
             if (eventsList.length > 0) {
-                onGameStart(eventsList);
+                onGameStart(eventsList, useDragAndDrop);
             } else {
                 console.error('No events found for the selected criteria');
                 setErrorMessage('No events found for the selected date range. Please try different options.');
@@ -65,7 +66,7 @@ const PreGameUI = ({ onGameStart }) => {
             console.error('Error fetching events:', error);
             setErrorMessage('An error occurred while fetching events. Please try again later.');
         });
-    }, [fetchEvents, onGameStart]);
+    }, [fetchEvents, onGameStart, useDragAndDrop]);
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen w-full px-4 sm:px-6 lg:px-8">
@@ -119,6 +120,19 @@ const PreGameUI = ({ onGameStart }) => {
                     onEndYearChange={setEndYear}
                     onInputFocus={handleYearInputFocus}
                 />
+                <div className="mb-4">
+                    <label className="flex items-center space-x-3 mb-3">
+                        <input
+                            type="checkbox"
+                            checked={useDragAndDrop}
+                            onChange={() => setUseDragAndDrop(!useDragAndDrop)}
+                            className="form-checkbox h-5 w-5 text-blue-600"
+                        />
+                        <span className="text-gray-700 dark:text-gray-300 font-medium">
+                            Use drag and drop mode
+                        </span>
+                    </label>
+                </div>
                 {errorMessage && (
                     <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded relative" role="alert">
                         <span className="block sm:inline">{errorMessage}</span>
