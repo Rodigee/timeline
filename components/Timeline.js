@@ -1,11 +1,31 @@
 import React, { useState } from 'react';
+import { useDragLayer } from 'react-dnd';
 import TimelineItem from './TimelineItem';
-import ImagePopup from './ImagePopup';
 import DropZone from './DropZone';
+import PlaceButton from './PlaceButton';
+import ImagePopup from './ImagePopup';
 
 export default function Timeline({ placedEvents, gameOver, onPlaceEvent, recentlyPlacedIndex, useDragAndDrop }) {
     const [popupImage, setPopupImage] = useState(null);
     const [expandedIndex, setExpandedIndex] = useState(null);
+
+    const { isDragging } = useDragLayer((monitor) => ({
+        isDragging: monitor.isDragging(),
+    }));
+
+    const renderPlacementElement = (index) => {
+        if (useDragAndDrop) {
+            return (
+                <DropZone
+                    index={index}
+                    onPlaceEvent={onPlaceEvent}
+                    isActive={isDragging}
+                />
+            );
+        } else {
+            return <PlaceButton onPlaceEvent={onPlaceEvent} index={index} />;
+        }
+    };
 
     return (
         <div className="relative">
@@ -14,19 +34,21 @@ export default function Timeline({ placedEvents, gameOver, onPlaceEvent, recentl
                 <span className="text-sm font-bold text-gray-600 dark:text-gray-300">BEFORE</span>
             </div>
             <div className="grid grid-cols-1 gap-2 relative mb-4">
-                {!gameOver && <DropZone index={0} onPlaceEvent={onPlaceEvent} useDragAndDrop={useDragAndDrop} />}
+                {!gameOver && renderPlacementElement(0)}
                 {placedEvents.map((event, index) => (
                     <React.Fragment key={event.year + event.event}>
                         <TimelineItem
                             event={event}
                             index={index}
+                            gameOver={gameOver}
+                            onPlaceEvent={onPlaceEvent}
                             recentlyPlacedIndex={recentlyPlacedIndex}
                             expandedIndex={expandedIndex}
                             setExpandedIndex={setExpandedIndex}
                             setPopupImage={setPopupImage}
                             useDragAndDrop={useDragAndDrop}
                         />
-                        {!gameOver && <DropZone index={index + 1} onPlaceEvent={onPlaceEvent} useDragAndDrop={useDragAndDrop} />}
+                        {!gameOver && renderPlacementElement(index + 1)}
                     </React.Fragment>
                 ))}
             </div>

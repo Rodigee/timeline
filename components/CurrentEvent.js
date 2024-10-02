@@ -14,12 +14,13 @@ export default function CurrentEvent({ event, useDragAndDrop }) {
     }), [event]);
 
     return (
-        <div>
+        <div className="relative">
             <div
                 ref={useDragAndDrop ? drag : null}
                 className={`p-4 rounded bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-100 flex items-center
                     ${useDragAndDrop ? 'cursor-move' : ''}
-                    ${isDragging ? 'opacity-50' : 'opacity-100'}`}
+                    transition-opacity duration-200
+                    ${isDragging ? 'opacity-0' : 'opacity-100'}`}
             >
                 <div className="flex-grow pr-4">
                     {event.event}
@@ -42,7 +43,7 @@ export default function CurrentEvent({ event, useDragAndDrop }) {
             )}
             {useDragAndDrop && (
                 <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    Drag this event to place it on the timeline
+                    {isDragging ? 'Release to place the event on the timeline' : 'Drag this event to place it on the timeline'}
                 </p>
             )}
         </div>
