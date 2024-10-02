@@ -12,6 +12,12 @@ const PreGameUI = ({ onGameStart }) => {
     const [useDragAndDrop, setUseDragAndDrop] = useState(false);
 
     useEffect(() => {
+        // Run localStorage operations only on the client-side
+        const savedPreference = localStorage.getItem('useDragAndDrop');
+        if (savedPreference !== null) {
+            setUseDragAndDrop(JSON.parse(savedPreference));
+        }
+
         const today = new Date();
         setSelectedMonth(today.getMonth() + 1);
         setSelectedDay(today.getDate());
@@ -35,6 +41,11 @@ const PreGameUI = ({ onGameStart }) => {
 
     const handleYearInputFocus = useCallback(() => {
         setErrorMessage(''); // Clear the error message when year input is focused
+    }, []);
+
+    const handleDragAndDropChange = useCallback((newValue) => {
+        setUseDragAndDrop(newValue);
+        localStorage.setItem('useDragAndDrop', JSON.stringify(newValue));
     }, []);
 
     const fetchEvents = useCallback(() => {
@@ -120,12 +131,12 @@ const PreGameUI = ({ onGameStart }) => {
                     onEndYearChange={setEndYear}
                     onInputFocus={handleYearInputFocus}
                 />
-                <div className="mb-4">
+                <div className="my-4">
                     <label className="flex items-center space-x-3 mb-3">
                         <input
                             type="checkbox"
                             checked={useDragAndDrop}
-                            onChange={() => setUseDragAndDrop(!useDragAndDrop)}
+                            onChange={(e) => handleDragAndDropChange(e.target.checked)}
                             className="form-checkbox h-5 w-5 text-blue-600"
                         />
                         <span className="text-gray-700 dark:text-gray-300 font-medium">
@@ -140,7 +151,7 @@ const PreGameUI = ({ onGameStart }) => {
                 )}
                 <button
                     onClick={handleStartGame}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg mt-6 w-full transition-colors duration-200 text-lg font-semibold"
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg w-full transition-colors duration-200 text-lg font-semibold"
                 >
                     Start Game
                 </button>
