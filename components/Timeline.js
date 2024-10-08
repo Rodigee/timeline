@@ -3,10 +3,8 @@ import { useDragLayer } from 'react-dnd';
 import TimelineItem from './TimelineItem';
 import DropZone from './DropZone';
 import PlaceButton from './PlaceButton';
-import ImagePopup from './ImagePopup';
 
-export default function Timeline({ placedEvents, gameOver, onPlaceEvent, recentlyPlacedIndex, useDragAndDrop }) {
-    const [popupImage, setPopupImage] = useState(null);
+export default function Timeline({ placedEvents, gameOver, onPlaceEvent, recentlyPlacedIndex, useDragAndDrop, setPopupImage }) {
     const [expandedIndex, setExpandedIndex] = useState(null);
 
     const { isDragging } = useDragLayer((monitor) => ({
@@ -55,9 +53,6 @@ export default function Timeline({ placedEvents, gameOver, onPlaceEvent, recentl
             <div className="text-center py-4 mt-4 relative z-10">
                 <span className="text-sm font-bold text-gray-600 dark:text-gray-300">AFTER</span>
             </div>
-            {popupImage && (
-                <ImagePopup imageUrl={popupImage} onClose={() => setPopupImage(null)} />
-            )}
         </div>
     );
 }

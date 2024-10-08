@@ -1,10 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDrag } from 'react-dnd';
-import ImagePopup from './ImagePopup';
 
-export default function CurrentEvent({ event, useDragAndDrop }) {
-    const [popupImage, setPopupImage] = useState(null);
-
+export default function CurrentEvent({ event, useDragAndDrop, setPopupImage }) {
     const [{ isDragging }, drag] = useDrag(() => ({
         type: 'event',
         item: { id: event.id, event: event },
@@ -38,9 +35,6 @@ export default function CurrentEvent({ event, useDragAndDrop }) {
                     </div>
                 )}
             </div>
-            {popupImage && (
-                <ImagePopup imageUrl={popupImage} onClose={() => setPopupImage(null)} />
-            )}
             {useDragAndDrop && (
                 <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                     {isDragging ? 'Release to place the event on the timeline' : 'Drag this event to place it on the timeline'}

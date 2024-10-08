@@ -8,6 +8,7 @@ import GameOver from './GameOver';
 import Timeline from './Timeline';
 import Snackbar from './Snackbar';
 import PreGameUI from './PreGameUI';
+import ImagePopup from './ImagePopup';
 
 export default function TimelineGame() {
     const [events, setEvents] = useState([]);
@@ -22,6 +23,7 @@ export default function TimelineGame() {
     const [totalRounds, setTotalRounds] = useState(0);
     const [answerHistory, setAnswerHistory] = useState([]);
     const [useDragAndDrop, setUseDragAndDrop] = useState(false);
+    const [popupImage, setPopupImage] = useState(null);
 
     const startGame = useCallback((eventsList, dragAndDrop) => {
         if (eventsList.length > 0) {
@@ -153,6 +155,7 @@ export default function TimelineGame() {
                                     event={currentEvent}
                                     useDragAndDrop={useDragAndDrop}
                                     onPlaceEvent={handlePlaceEvent}
+                                    setPopupImage={setPopupImage}
                                 />
                             )}
                         </div>
@@ -164,6 +167,7 @@ export default function TimelineGame() {
                                 onPlaceEvent={handlePlaceEvent}
                                 recentlyPlacedIndex={recentlyPlacedIndex}
                                 useDragAndDrop={useDragAndDrop}
+                                setPopupImage={setPopupImage}
                             />
                         </div>
                     </>
@@ -173,6 +177,9 @@ export default function TimelineGame() {
                     message={snackbar.message}
                     isCorrect={snackbar.isCorrect}
                 />
+                {popupImage && (
+                    <ImagePopup imageUrl={popupImage} onClose={() => setPopupImage(null)} />
+                )}
             </section>
         </DndProvider>
     );
