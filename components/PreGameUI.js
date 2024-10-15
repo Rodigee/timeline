@@ -29,24 +29,24 @@ const PreGameUI = ({ onGameStart }) => {
         document.head.appendChild(link);
     }, []);
 
-    const handleDateChange = useCallback((month, day) => {
+    const handleDateChange = (month, day) => {
         setSelectedMonth(month);
         setSelectedDay(day);
-    }, []);
+    };
 
-    const handleEventTypeChange = useCallback((newEventType) => {
+    const handleEventTypeChange = (newEventType) => {
         setEventType(newEventType);
         setErrorMessage(''); // Clear the error message when event type changes
-    }, []);
+    };
 
-    const handleYearInputFocus = useCallback(() => {
+    const handleYearInputFocus = () => {
         setErrorMessage(''); // Clear the error message when year input is focused
-    }, []);
+    };
 
-    const handleDragAndDropChange = useCallback((newValue) => {
+    const handleDragAndDropChange = (newValue) => {
         setUseDragAndDrop(newValue);
         localStorage.setItem('useDragAndDrop', JSON.stringify(newValue));
-    }, []);
+    };
 
     const fetchEvents = useCallback(() => {
         const startYearParam = startYear ? `&startYear=${startYear}` : '';
